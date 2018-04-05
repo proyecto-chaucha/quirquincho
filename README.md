@@ -6,7 +6,7 @@ Bot de telegram para enviar y recibir [Chauchas](https://www.chaucha.cl).
 
 ```
 sudo apt-get install python3-pip
-pip3 install pybitcointools telegram
+pip3 install python-telegram-bot bitcoin
 git clone https://github.com/proyecto-chaucha/quirquincho.git
 python3 quirquincho
 ```
