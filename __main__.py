@@ -52,7 +52,7 @@ def send(bot, update, args):
 			msg = "Balance insuficiente"
 
 		elif not amount > 0:
-			msg	= "Monto inválido"
+			msg = "Monto inválido"
 
 		else:
 			# Transformar valores a Chatoshis
@@ -90,9 +90,10 @@ def send(bot, update, args):
 			except:
 				msg = "ERROR: %s" % broadcasting.text()
 	except:
-		msg = "Error de formato >:C"
+		msg = "Error de formato >:C\n\n"
+		msg += "Modo de uso: /send monto address"
 
-	logger.info("send(%i) => %s" % (user.id, msg))
+	logger.info("send(%i) => %s" % (user.id, msg.replace("\n", " - ")))
 	update.message.reply_text("%s" % msg)	
 
 
@@ -115,7 +116,7 @@ def balance(bot, update):
 	except:
 		msg = "No se pudo ejecutar la lectura de balance :C"
 
-	logger.info("balance(%i) => %s" % (user.id, msg))
+	logger.info("balance(%i) => %s" % (user.id, msg.replace("\n", " - ")))
 	update.message.reply_text("%s" % msg)
 
 def error(bot, update, error):
