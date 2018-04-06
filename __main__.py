@@ -6,14 +6,32 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def sendall(bot, update, args):
+	try:
+		user = update.message.from_user
+		info = getaddress(user.id)
+		
+		receptor = args[0]
+		max_amount = getbalance(info[0])[0]
+
+		msg = sendTx(info, max_amount, receptor)
+
+	except:
+		msg = "Error de formato >:C\n\n"
+		msg += "Modo de uso: /sendall address"
+
+	logger.info("sendall(%i) => %s" % (user.id, msg.replace("\n", " - ")))
+	update.message.reply_text("%s" % msg)			
+
 def send(bot, update, args):
 	try:
 		user = update.message.from_user
+		info = getaddress(user.id)
 		
 		amount = float(args[0])
 		receptor = args[1]
 
-		msg = sendTx(user.id, amount, receptor)
+		msg = sendTx(info, amount, receptor)
 
 	except:
 		msg = "Error de formato >:C\n\n"
@@ -50,6 +68,8 @@ def error(bot, update, error):
 
 # Main loop
 def main():
+	global quirquincho
+
 	# Configuración
 	updater = Updater(token)
 
@@ -59,13 +79,14 @@ def main():
 	# Listado de comandos
 	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
+	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
 
 	# log all errors
 	dp.add_error_handler(error)
 
-	quirquincho = getaddress('Quirquincho')[0]
+	quirquincho = getaddress('Quirquincho')
 	# Inicio de bot
-	logger.info("Quirquincho V 2.0 - %s" % quirquincho)
+	logger.info("Quirquincho V 2.0 - %s" % quirquincho[0])
 	updater.start_polling()
 
 	updater.idle()

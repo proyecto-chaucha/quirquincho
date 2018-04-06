@@ -2,8 +2,7 @@ from config import salt, satoshi, fee, magic
 from requests import get, post
 from bitcoin import *
 
-def sendTx(user, amount, receptor):
-		info = getaddress(user)
+def sendTx(info, amount, receptor):
 		addr = info[0]
 		privkey = info[1]
 		
