@@ -7,13 +7,17 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 logger = logging.getLogger(__name__)
 
 def sendall(bot, update, args):
-	user = update.message.from_user
-	info = getaddress(user.id)
-	
-	receptor = args[0]
+	try:
+		user = update.message.from_user
+		info = getaddress(user.id)
+		
+		receptor = args[0]
 
-	max_amount = getbalance(info[0])[0]
-	msg = sendTx(info, max_amount, receptor)
+		max_amount = getbalance(info[0])[0]
+		msg = sendTx(info, max_amount, receptor)
+	except:
+		msg = "Error de formato >:C\n\n"
+		msg += "Modo de uso: /sendall address"
 
 	logger.info("sendall(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)			
