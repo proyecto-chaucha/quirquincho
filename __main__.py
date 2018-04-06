@@ -7,20 +7,15 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 logger = logging.getLogger(__name__)
 
 def sendall(bot, update, args):
-	try:
-		user = update.message.from_user
-		info = getaddress(user.id)
-		
-		receptor = args[0]
-		max_amount = getbalance(info[0])[0]
+	user = update.message.from_user
+	info = getaddress(user.id)
+	
+	receptor = args[0]
 
-		msg = sendTx(info, max_amount, receptor)
+	max_amount = getbalance(info[0])[0]
+	msg = sendTx(info, max_amount, receptor)
 
-	except:
-		msg = "Error de formato >:C\n\n"
-		msg += "Modo de uso: /sendall address"
-
-	logger.info("sendall(%i) => %s" % (user.id, msg.replace("\n", " - ")))
+	logger.info("sendall(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)			
 
 def send(bot, update, args):
@@ -37,7 +32,7 @@ def send(bot, update, args):
 		msg = "Error de formato >:C\n\n"
 		msg += "Modo de uso: /send monto address"
 
-	logger.info("send(%i) => %s" % (user.id, msg.replace("\n", " - ")))
+	logger.info("send(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)	
 
 
@@ -60,7 +55,7 @@ def balance(bot, update):
 	except:
 		msg = "No se pudo ejecutar la lectura de balance :C"
 
-	logger.info("balance(%i) => %s" % (user.id, msg.replace("\n", " - ")))
+	logger.info("balance(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)
 
 def error(bot, update, error):

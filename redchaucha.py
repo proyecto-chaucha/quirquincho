@@ -13,7 +13,7 @@ def sendTx(info, amount, receptor):
 		if not len(receptor) == 34 and receptor[0] == 'c':
 			msg = "Dirección inválida"
 
-		elif not confirmed_balance - fee >= amount:
+		elif not confirmed_balance >= amount:
 			msg = "Balance insuficiente"
 
 		elif not amount > 0:
@@ -21,7 +21,7 @@ def sendTx(info, amount, receptor):
 
 		else:
 			# Transformar valores a Chatoshis
-			amount = int(amount*satoshi)
+			used_amount = int(amount*satoshi)
 			used_fee = int(fee*satoshi)
 
 			# Utilizar solo las unspent que se necesiten
@@ -31,15 +31,14 @@ def sendTx(info, amount, receptor):
 			for i in inputs:
 				used_balance += i['value']
 				used_inputs.append(i)
-				if used_balance >= amount:
-					break 
+				if used_balance > used_amount:
+					break
 
 			# Creación de salida
-			outputs = [{'address' : receptor, 'value' : amount}]
-
-			# Agregar transacción de vuelto si es necesario
-			if not int(used_balance - amount) == 0:
-				outputs.append({'address' : addr, 'value' : int(used_balance - (amount + used_fee))}) 
+			if used_amount == used_balance:
+				outputs = [{'address' : receptor, 'value' : (used_amount - used_fee)}]
+			else:
+				outputs = [{'address' : receptor, 'value' : used_amount}, {'address' : addr, 'value' : int(used_balance - used_amount - used_fee)}]
 
 			# Transacción
 			tx = mktx(used_inputs, outputs)
@@ -53,9 +52,9 @@ def sendTx(info, amount, receptor):
 			try:
 				msg = "insight.chaucha.cl/tx/%s" % broadcasting.json()['txid']
 			except:
-				msg = "ERROR: %s" % broadcasting.text()
-
-			return msg
+				msg = broadcasting.text()
+			
+		return msg
 
 
 def getaddress(user_id):
