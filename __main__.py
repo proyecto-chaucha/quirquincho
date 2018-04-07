@@ -3,7 +3,6 @@ from telegram import ParseMode
 from config import token
 from redchaucha import *
 import logging
-from qrcode import make
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
