@@ -1,10 +1,24 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ParseMode
 from config import token
 from redchaucha import *
 import logging
+from qrcode import make
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+def start(bot, update):
+	msg =  "*Holi !*"
+	logger.info("start() => %s" % (msg))
+	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
+
+def qr(bot, update):
+	user = update.message.from_user
+	info = getaddress(user.id)
+
+	logger.info("qr(%i) => %s" % (user.id, info[0]))
+	update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])	
 
 def sendall(bot, update, args):
 	try:
@@ -76,7 +90,9 @@ def main():
 	dp = updater.dispatcher
 
 	# Listado de comandos
+	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("balance", balance))
+	dp.add_handler(CommandHandler("qr", qr))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
 	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
 
