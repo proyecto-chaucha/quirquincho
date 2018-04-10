@@ -20,7 +20,7 @@ def op_return(bot, update):
 			msg = "No hay mensaje, no puedo hacer nada :C"
 		
 	except:
-		msg = "Error de formato >:C\n\n"
+		msg = "Error >:C\nIntenta más tarde...\n\n"
 		msg += "Modo de uso: /op_return mensaje"
 
 	logger.info("op_return(%i) => %s" % (user.id, msg))
@@ -49,7 +49,7 @@ def sendall(bot, update, args):
 		msg = sendTx(info, max_amount, receptor)
 
 	except:
-		msg = "Error de formato >:C\n\n"
+		msg = "Error >:C\nIntenta más tarde...\n\n"
 		msg += "Modo de uso: /sendall address"
 
 	logger.info("sendall(%i) => %s" % (user.id, msg))
@@ -66,7 +66,7 @@ def send(bot, update, args):
 		msg = sendTx(info, amount, receptor, 'Quirquincho')
 
 	except:
-		msg = "Error de formato >:C\n\n"
+		msg = "Error >:C\nIntenta más tarde...\n\n"
 		msg += "Modo de uso: /send monto address"
 
 	logger.info("send(%i) => %s" % (user.id, msg))
