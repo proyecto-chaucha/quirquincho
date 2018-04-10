@@ -12,9 +12,9 @@ def op_return(bot, update):
 		user = update.message.from_user
 		info = getaddress(user.id)
 		
-		op_return = update.message.text.replace('/op_return ', '')
+		op_return = update.message.text[11:]
 
-		if len(update.message.text) > 10:
+		if len(op_return) > 0:
 			msg = sendTx(info, 0.001, info[0], op_return)
 		else:
 			msg = "No hay mensaje, no puedo hacer nada :C"
