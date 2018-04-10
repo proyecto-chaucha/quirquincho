@@ -1,4 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ParseMode
 from config import token
 from redchaucha import *
 import logging
@@ -22,6 +23,17 @@ def op_return(bot, update):
 	logger.info("op_return(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)			
 
+def start(bot, update):
+	msg =  "*Holi !*"
+	logger.info("start() => %s" % (msg))
+	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
+
+def qr(bot, update):
+	user = update.message.from_user
+	info = getaddress(user.id)
+
+	logger.info("qr(%i) => %s" % (user.id, info[0]))
+	update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])	
 
 def sendall(bot, update, args):
 	try:
@@ -31,8 +43,8 @@ def sendall(bot, update, args):
 		receptor = args[0]
 
 		max_amount = getbalance(info[0])[0]
-		msg = sendTx(info, max_amount, receptor, 'Quirquincho')
-		
+		msg = sendTx(info, max_amount, receptor)
+
 	except:
 		msg = "Error de formato >:C\n\n"
 		msg += "Modo de uso: /sendall address"
@@ -94,6 +106,8 @@ def main():
 	dp = updater.dispatcher
 
 	# Listado de comandos
+	dp.add_handler(CommandHandler("qr", qr))
+	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("op_return", op_return))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
