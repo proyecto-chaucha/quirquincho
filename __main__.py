@@ -7,15 +7,29 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def mensajes(bot, update):
+	try:
+		user = update.message.from_user
+		addr = getaddress(user.id)[0]
+		msg = getTx(addr)
+		if len(msg) == 0:
+			msg = 'No tienes mensajes en el blockchain'
+
+	except:
+		msg = "Error >:C\nIntenta más tarde...\n\n"
+		
+	logger.info("mensajes(%i) => %s" % (user.id, msg))
+	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
+
 def op_return(bot, update):
 	try:
 		user = update.message.from_user
 		info = getaddress(user.id)
-		
+		max_amount = getbalance(info[0])[0]
 		op_return = update.message.text[11:]
 
 		if len(op_return) > 0:
-			msg = sendTx(info, 0.001, info[0], op_return)
+			msg = sendTx(info, max_amount, info[0], op_return)
 		else:
 			msg = "No hay mensaje, no puedo hacer nada :C"
 		
@@ -112,6 +126,7 @@ def main():
 	dp.add_handler(CommandHandler("qr", qr))
 	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("balance", balance))
+	dp.add_handler(CommandHandler("mensajes", mensajes))
 	dp.add_handler(CommandHandler("op_return", op_return))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
 	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))

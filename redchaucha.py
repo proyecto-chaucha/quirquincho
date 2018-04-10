@@ -1,6 +1,22 @@
 from config import salt, satoshi, fee, magic
 from requests import get, post
 from bitcoin import *
+import binascii
+import time
+
+def getTx(addr):
+	info = get('http://insight.chaucha.cl/api/addr/' + addr).json()
+	msg = ''
+	for i in info['transactions']:
+		tx = get('http://insight.chaucha.cl/api/tx/' + i).json()
+		for j in tx['vout']:
+			hex_script = j['scriptPubKey']['hex']
+			if hex_script[:2] == '6a':
+				msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8')
+				fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(tx['time'])))
+				if not msg_str == 'Quirquincho':
+					msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i + '): `' +  msg_str + '`\n'
+	return msg
 
 def OP_RETURN_bin_to_hex(string):
 	return binascii.b2a_hex(string).decode('utf-8')
@@ -67,7 +83,7 @@ def sendTx(info, amount, receptor, op_return):
 			for i in range(len(used_inputs)):
 				tx = sign(tx, i, privkey)
 
-			broadcasting = post('https://explorer.cha.terahash.cl/api/tx/send', data={'rawtx' : tx})
+			broadcasting = post('http://insight.chaucha.cl/api/tx/send', data={'rawtx' : tx})
 
 			try:
 				msg = "insight.chaucha.cl/tx/%s" % broadcasting.json()['txid']
@@ -84,7 +100,7 @@ def getaddress(user_id):
 
 def getbalance(addr):
 	# Captura de balance por tx sin gastar
-	unspent = get('https://explorer.cha.terahash.cl/api/addr/' + addr + '/utxo').json()
+	unspent = get('http://insight.chaucha.cl/api/addr/' + addr + '/utxo').json()
 		
 	confirmed = unconfirmed = 0
 
