@@ -14,7 +14,10 @@ def op_return(bot, update):
 		
 		op_return = update.message.text.replace('/op_return ', '')
 
-		msg = sendTx(info, 0.001, info[0], op_return)
+		if len(update.message.text) > 10:
+			msg = sendTx(info, 0.001, info[0], op_return)
+		else:
+			msg = "No hay mensaje, no puedo hacer nada :C"
 		
 	except:
 		msg = "Error de formato >:C\n\n"
