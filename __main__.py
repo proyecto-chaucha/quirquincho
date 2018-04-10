@@ -6,6 +6,23 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def op_return(bot, update):
+	try:
+		user = update.message.from_user
+		info = getaddress(user.id)
+		
+		op_return = update.message.text.replace('/op_return ', '')
+
+		msg = sendTx(info, 0.001, info[0], op_return)
+		
+	except:
+		msg = "Error de formato >:C\n\n"
+		msg += "Modo de uso: /op_return mensaje"
+
+	logger.info("op_return(%i) => %s" % (user.id, msg))
+	update.message.reply_text("%s" % msg)			
+
+
 def sendall(bot, update, args):
 	try:
 		user = update.message.from_user
@@ -60,7 +77,7 @@ def balance(bot, update):
 	except:
 		msg = "No se pudo ejecutar la lectura de balance :C"
 
-	logger.info("balance(%i) => %s" % (user.id, msg))
+	logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', '')))
 	update.message.reply_text("%s" % msg)
 
 def error(bot, update, error):
@@ -78,6 +95,7 @@ def main():
 
 	# Listado de comandos
 	dp.add_handler(CommandHandler("balance", balance))
+	dp.add_handler(CommandHandler("op_return", op_return))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
 	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
 
