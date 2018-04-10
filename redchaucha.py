@@ -2,7 +2,23 @@ from config import salt, satoshi, fee, magic
 from requests import get, post
 from bitcoin import *
 
-def sendTx(info, amount, receptor):
+def OP_RETURN_bin_to_hex(string):
+	return binascii.b2a_hex(string).decode('utf-8')
+
+def OP_RETURN_payload(string):
+	metadata = bytes(string, 'utf-8')
+	metadata_len= len(metadata)
+	
+	if metadata_len<=75:
+		payload=bytearray((metadata_len,))+metadata # length byte + data (https://en.bitcoin.it/wiki/Script)
+	elif metadata_len<=256:
+		payload=b"\x4c"+bytearray((metadata_len,))+metadata # OP_PUSHDATA1 format
+	else:
+		payload=b"\x4d"+bytearray((metadata_len%256,))+bytearray((int(metadata_len/256),))+metadata # OP_PUSHDATA2 format
+
+	return payload
+
+def sendTx(info, amount, receptor, op_return):
 		addr = info[0]
 		privkey = info[1]
 		
@@ -34,11 +50,15 @@ def sendTx(info, amount, receptor):
 				if used_balance > used_amount:
 					break
 
+			# OP_RETURN
+			payload = OP_RETURN_payload(op_return)
+			script = '6a'+OP_RETURN_bin_to_hex(payload)
+
 			# Creación de salida
 			if used_amount == used_balance:
-				outputs = [{'address' : receptor, 'value' : (used_amount - used_fee)}]
+				outputs = [{'address' : receptor, 'value' : (used_amount - used_fee)}, {'value' : 0, 'script' : script}]
 			else:
-				outputs = [{'address' : receptor, 'value' : used_amount}, {'address' : addr, 'value' : int(used_balance - used_amount - used_fee)}]
+				outputs = [{'address' : receptor, 'value' : used_amount}, {'address' : addr, 'value' : int(used_balance - used_amount - used_fee)}, {'value' : 0, 'script' : script}]
 
 			# Transacción
 			tx = mktx(used_inputs, outputs)
