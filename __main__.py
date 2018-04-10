@@ -13,7 +13,7 @@ def sendall(bot, update, args):
 	receptor = args[0]
 
 	max_amount = getbalance(info[0])[0]
-	msg = sendTx(info, max_amount, receptor)
+	msg = sendTx(info, max_amount, receptor, 'Quirquincho')
 
 	logger.info("sendall(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)			
@@ -26,7 +26,7 @@ def send(bot, update, args):
 		amount = float(args[0])
 		receptor = args[1]
 
-		msg = sendTx(info, amount, receptor)
+		msg = sendTx(info, amount, receptor, 'Quirquincho')
 
 	except:
 		msg = "Error de formato >:C\n\n"
