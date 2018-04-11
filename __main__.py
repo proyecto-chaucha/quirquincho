@@ -14,28 +14,24 @@ def mensajes(bot, update):
 		msg = getTx(addr)
 		if len(msg) == 0:
 			msg = 'No tienes mensajes en el blockchain'
-
 	except:
-		msg = "Error >:C\nIntenta más tarde...\n\n"
+		msg = "Error >:C\nIntenta más tarde..."
 		
 	logger.info("mensajes(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
-def op_return(bot, update):
+def op_return(bot, update, args):
 	try:
 		user = update.message.from_user
 		info = getaddress(user.id)
-		max_amount = getbalance(info[0])[0]
-		op_return = update.message.text[11:]
+		op_return = ' '.join(args)
 
 		if len(op_return) > 0:
-			msg = sendTx(info, max_amount, info[0], op_return)
+			msg = sendTx(info, 0.001, info[0], op_return)
 		else:
 			msg = "No hay mensaje, no puedo hacer nada :C"
-		
 	except:
-		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /op_return mensaje"
+		msg = "Error >:C\nIntenta más tarde..."
 
 	logger.info("op_return(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg)			
@@ -127,7 +123,7 @@ def main():
 	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("mensajes", mensajes))
-	dp.add_handler(CommandHandler("op_return", op_return))
+	dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
 	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
 

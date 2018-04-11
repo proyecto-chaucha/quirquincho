@@ -12,14 +12,12 @@ def getTx(addr):
 		for j in tx['vout']:
 			hex_script = j['scriptPubKey']['hex']
 			if hex_script[:2] == '6a':
-				msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8')
+				msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8', errors='ignore')
 				fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(tx['time'])))
 				if not msg_str == 'Quirquincho':
 					msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i + '): `' +  msg_str + '`\n'
 	return msg
 
-def OP_RETURN_bin_to_hex(string):
-	return binascii.b2a_hex(string).decode('utf-8')
 
 def OP_RETURN_payload(string):
 	metadata = bytes(string, 'utf-8')
@@ -68,7 +66,7 @@ def sendTx(info, amount, receptor, op_return):
 
 			# OP_RETURN
 			payload = OP_RETURN_payload(op_return)
-			script = '6a'+OP_RETURN_bin_to_hex(payload)
+			script = '6a' + binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
 
 			# Creación de salida
 			if used_amount == used_balance:
