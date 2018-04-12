@@ -8,14 +8,15 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 logger = logging.getLogger(__name__)
 
 def mensajes(bot, update):
-
-	user = update.message.from_user
-	addr = getaddress(user.id)[0]
-	msg = getTx(addr)
-	if len(msg) == 0:
-		msg = 'No tienes mensajes en el blockchain'
-
-	
+	try:
+		user = update.message.from_user
+		addr = getaddress(user.id)[0]
+		msg = getTx(addr)
+		if len(msg) == 0:
+			msg = 'No tienes mensajes en el blockchain'
+	except:
+		msg = "Error >:C\nIntenta más tarde..."
+		
 	logger.info("mensajes(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
