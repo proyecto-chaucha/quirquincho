@@ -19,7 +19,7 @@ def getTx(addr):
 					else:
 						sub_script = hex_script[6:]
 
-					msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8', errors='ignore')
+					msg_str = binascii.a2b_hex(sub_script).decode('utf-8', errors='ignore')
 					fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
 
 					if not msg_str == 'Quirquincho':
