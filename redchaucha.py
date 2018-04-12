@@ -23,14 +23,8 @@ def getTx(addr):
 
 def OP_RETURN_payload(string):
 	metadata = bytes(string, 'utf-8')
-	metadata_len= len(metadata)
-	
-	if metadata_len<=75:
-		payload=bytearray((metadata_len,))+metadata # length byte + data (https://en.bitcoin.it/wiki/Script)
-	elif metadata_len<=256:
-		payload=b"\x4c"+bytearray((metadata_len,))+metadata # OP_PUSHDATA1 format
-	else:
-		payload=b"\x4d"+bytearray((metadata_len%256,))+bytearray((int(metadata_len/256),))+metadata # OP_PUSHDATA2 format
+	metadata_len = len(metadata)	
+	payload = bytearray((metadata_len,)) + metadata
 
 	return payload
 
