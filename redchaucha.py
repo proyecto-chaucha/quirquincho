@@ -7,14 +7,17 @@ import time
 def getTx(addr):
 	info = get('http://insight.chaucha.cl/api/txs/?address=' + addr).json()
 	msg = ''
-	for i in info['txs']:
-		for j in i['vout']:
-			hex_script = j['scriptPubKey']['hex']
-			if hex_script[:2] == '6a':
-				msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8', errors='ignore')
-				fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
-				if not msg_str == 'Quirquincho':
-					msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
+
+	for x in range(int(info['pagesTotal'])):
+		info = get('http://insight.chaucha.cl/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
+		for i in info['txs']:
+			for j in i['vout']:
+				hex_script = j['scriptPubKey']['hex']
+				if hex_script[:2] == '6a':
+					msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8', errors='ignore')
+					fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
+					if not msg_str == 'Quirquincho':
+						msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
 	return msg
 
 
