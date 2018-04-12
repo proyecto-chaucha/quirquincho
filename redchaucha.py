@@ -5,17 +5,16 @@ import binascii
 import time
 
 def getTx(addr):
-	info = get('http://insight.chaucha.cl/api/addr/' + addr).json()
+	info = get('http://insight.chaucha.cl/api/txs/?address=' + addr).json()
 	msg = ''
-	for i in info['transactions']:
-		tx = get('http://insight.chaucha.cl/api/tx/' + i).json()
-		for j in tx['vout']:
+	for i in info['txs']:
+		for j in i['vout']:
 			hex_script = j['scriptPubKey']['hex']
 			if hex_script[:2] == '6a':
 				msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8', errors='ignore')
-				fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(tx['time'])))
+				fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
 				if not msg_str == 'Quirquincho':
-					msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i + '): `' +  msg_str + '`\n'
+					msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
 	return msg
 
 
