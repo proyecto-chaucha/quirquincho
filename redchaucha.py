@@ -14,8 +14,14 @@ def getTx(addr):
 			for j in i['vout']:
 				hex_script = j['scriptPubKey']['hex']
 				if hex_script[:2] == '6a':
+					if len(hex_script) <= 77*2:
+						sub_script = hex_script[4:]
+					else:
+						sub_script = hex_script[6:]
+
 					msg_str = binascii.a2b_hex(hex_script[4:]).decode('utf-8', errors='ignore')
 					fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
+
 					if not msg_str == 'Quirquincho':
 						msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
 	return msg
@@ -23,8 +29,14 @@ def getTx(addr):
 
 def OP_RETURN_payload(string):
 	metadata = bytes(string, 'utf-8')
-	metadata_len = len(metadata)	
-	payload = bytearray((metadata_len,)) + metadata
+	metadata_len= len(metadata)
+	
+	if metadata_len<=75:
+		payload=bytearray((metadata_len,))+metadata # length byte + data (https://en.bitcoin.it/wiki/Script)
+	elif metadata_len<=256:
+		payload=b"\x4c"+bytearray((metadata_len,))+metadata # OP_PUSHDATA1 format
+	else:
+		payload=b"\x4d"+bytearray((metadata_len%256,))+bytearray((int(metadata_len/256),))+metadata # OP_PUSHDATA2 format
 
 	return payload
 
@@ -82,7 +94,7 @@ def sendTx(info, amount, receptor, op_return):
 			try:
 				msg = "insight.chaucha.cl/tx/%s" % broadcasting.json()['txid']
 			except:
-				msg = broadcasting.text()
+				msg = broadcasting.text
 			
 		return msg
 
