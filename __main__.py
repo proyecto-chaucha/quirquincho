@@ -2,6 +2,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
 from config import token
 from redchaucha import *
+from random import randint
 import logging
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -16,7 +17,7 @@ def mensajes(bot, update):
 			msg = 'No tienes mensajes en el blockchain'
 	except:
 		msg = "Error >:C\nIntenta más tarde..."
-		
+
 	logger.info("mensajes(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
@@ -34,7 +35,7 @@ def op_return(bot, update, args):
 		msg = "Error >:C\nIntenta más tarde..."
 
 	logger.info("op_return(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg)			
+	update.message.reply_text("%s" % msg)
 
 def start(bot, update):
 	msg =  "*Holi !*"
@@ -46,13 +47,13 @@ def qr(bot, update):
 	info = getaddress(user.id)
 
 	logger.info("qr(%i) => %s" % (user.id, info[0]))
-	update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])	
+	update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])
 
 def sendall(bot, update, args):
 	try:
 		user = update.message.from_user
 		info = getaddress(user.id)
-		
+
 		receptor = args[0]
 
 		max_amount = getbalance(info[0])[0]
@@ -63,13 +64,13 @@ def sendall(bot, update, args):
 		msg += "Modo de uso: /sendall address"
 
 	logger.info("sendall(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg)			
+	update.message.reply_text("%s" % msg)
 
 def send(bot, update, args):
 	try:
 		user = update.message.from_user
 		info = getaddress(user.id)
-		
+
 		amount = float(args[0])
 		receptor = args[1]
 
@@ -80,7 +81,7 @@ def send(bot, update, args):
 		msg += "Modo de uso: /send monto address"
 
 	logger.info("send(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg)	
+	update.message.reply_text("%s" % msg)
 
 
 def balance(bot, update):
@@ -105,6 +106,18 @@ def balance(bot, update):
 	logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', '')))
 	update.message.reply_text("%s" % msg)
 
+def azar(bot, update, args):
+	try:
+		maxnum = randint(0, int(args[0]))
+		msg = "Número al azar: %s\n" % (maxnum,)
+	except Exception as e:
+		logger.info(e)
+		msg = "Error >:C\nIntenta más tarde...\n\n"
+		msg += "Modo de uso: /azar [numero]"
+
+	logger.info("random(%i) => %s" % (update.message.from_user.id, msg))
+	update.message.reply_text("%s" % msg)
+
 def error(bot, update, error):
 	logger.warning('Update: "%s" - Error: "%s"' % (update, error))
 
@@ -126,6 +139,7 @@ def main():
 	dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
 	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
+	dp.add_handler(CommandHandler("azar", azar, pass_args=True))
 
 	# log all errors
 	dp.add_error_handler(error)
