@@ -57,7 +57,7 @@ def sendall(bot, update, args):
 		receptor = args[0]
 
 		max_amount = getbalance(info[0])[0]
-		msg = sendTx(info, max_amount, receptor)
+		msg = sendTx(info, max_amount, receptor, 'Quirquincho sendall')
 
 	except:
 		msg = "Error >:C\nIntenta más tarde...\n\n"

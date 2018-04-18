@@ -13,7 +13,7 @@ def getTx(addr):
 		for i in info['txs']:
 			for j in i['vout']:
 				hex_script = j['scriptPubKey']['hex']
-				if hex_script[:2] == '6a':
+				if hex_script.startswith('6a'):
 					if len(hex_script) <= 77*2:
 						sub_script = hex_script[4:]
 					else:
@@ -60,7 +60,6 @@ def sendTx(info, amount, receptor, op_return):
 		else:
 			# Transformar valores a Chatoshis
 			used_amount = int(amount*satoshi)
-			used_fee = int(fee*satoshi)
 
 			# Utilizar solo las unspent que se necesiten
 			used_balance = 0
@@ -71,16 +70,25 @@ def sendTx(info, amount, receptor, op_return):
 				used_inputs.append(i)
 				if used_balance > used_amount:
 					break
+			
+			used_fee = int(fee*satoshi*(len(inputs)/4 + 1))
 
 			# OP_RETURN
 			payload = OP_RETURN_payload(op_return)
 			script = '6a' + binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
 
-			# Creación de salida
-			if used_amount == used_balance:
-				outputs = [{'address' : receptor, 'value' : (used_amount - used_fee)}, {'value' : 0, 'script' : script}]
+			# Output
+			outputs = []
+
+			# Receptor
+			if used_balance == used_amount:
+				outputs.append({'address' : receptor, 'value' : (used_amount - used_fee)})
 			else:
-				outputs = [{'address' : receptor, 'value' : used_amount}, {'address' : addr, 'value' : int(used_balance - used_amount - used_fee)}, {'value' : 0, 'script' : script}]
+				outputs.append({'address' : receptor, 'value' : used_amount})
+				
+			# Change
+			if used_balance > used_amount + used_fee:
+				outputs.append({'address' : addr, 'value' : int(used_balance - used_amount - used_fee)})
 
 			# Transacción
 			tx = mktx(used_inputs, outputs)
@@ -88,6 +96,8 @@ def sendTx(info, amount, receptor, op_return):
 			# Firma
 			for i in range(len(used_inputs)):
 				tx = sign(tx, i, privkey)
+
+			print(len(tx))
 
 			broadcasting = post('http://insight.chaucha.cl/api/tx/send', data={'rawtx' : tx})
 
