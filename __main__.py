@@ -2,8 +2,9 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
 from config import token
 from redchaucha import *
-from random import randint
 import logging
+
+from azar import get_random_number
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -108,12 +109,15 @@ def balance(bot, update):
 
 def azar(bot, update, args):
 	try:
-		maxnum = randint(0, int(args[0]))
-		msg = "Número al azar: %s\n" % (maxnum,)
+		if args:
+			max_number = args[0]
+		else:
+			max_number = 100
+		msg = "Número al azar (0, %s): %s\n" % (max_number, get_random_number(max_number))
 	except Exception as e:
-		logger.info(e)
-		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /azar [numero]"
+		msg = "Número al azar (0, %s): %s\n" % (100, get_random_number(100))
+		msg = "Error >:C\n%s...\n\n" % (e)
+		msg += "Modo de uso: /azar [numero|pi] por defecto es 100"
 
 	logger.info("random(%i) => %s" % (update.message.from_user.id, msg))
 	update.message.reply_text("%s" % msg)
