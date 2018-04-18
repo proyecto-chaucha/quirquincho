@@ -114,7 +114,7 @@ def balance(bot, update):
 
 def azar(bot, update, args):
 	try:
-		um = int(args[0])
+		num = int(args[0])
 		maxnum = randint(0, num)
 		msg = "Número al azar: %s\n" % (maxnum)
 
