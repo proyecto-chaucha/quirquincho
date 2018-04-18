@@ -4,9 +4,10 @@ from bitcoin import *
 import binascii
 import time
 
-def getTx(addr):
+def getTx(addr, max_read):
 	info = get('http://insight.chaucha.cl/api/txs/?address=' + addr).json()
 	msg = ''
+	counter = 0
 
 	for x in range(int(info['pagesTotal'])):
 		info = get('http://insight.chaucha.cl/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
@@ -22,8 +23,10 @@ def getTx(addr):
 					msg_str = binascii.a2b_hex(sub_script).decode('utf-8', errors='ignore')
 					fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
 
-					if not msg_str == 'Quirquincho':
+					if not msg_str == 'Quirquincho' and counter < max_read:
 						msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
+						counter +=1
+
 	return msg
 
 
@@ -73,10 +76,6 @@ def sendTx(info, amount, receptor, op_return):
 			
 			used_fee = int(fee*satoshi*(len(inputs)/4 + 1))
 
-			# OP_RETURN
-			payload = OP_RETURN_payload(op_return)
-			script = '6a' + binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
-
 			# Output
 			outputs = []
 
@@ -89,6 +88,12 @@ def sendTx(info, amount, receptor, op_return):
 			# Change
 			if used_balance > used_amount + used_fee:
 				outputs.append({'address' : addr, 'value' : int(used_balance - used_amount - used_fee)})
+
+			# OP_RETURN
+			if len(op_return) > 0 and len(op_return) <= 255:
+				payload = OP_RETURN_payload(op_return)
+				script = '6a' + binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
+				outputs.append({'value' : 0, 'script' : script})
 
 			# Transacción
 			tx = mktx(used_inputs, outputs)

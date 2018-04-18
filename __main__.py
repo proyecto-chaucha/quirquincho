@@ -8,15 +8,21 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def mensajes(bot, update):
+def mensajes(bot, update, args):
 	try:
 		user = update.message.from_user
 		addr = getaddress(user.id)[0]
-		msg = getTx(addr)
+
+		max_read = int(args[0])
+
+		if max_read > 0:
+			msg = getTx(addr, max_read)
+
 		if len(msg) == 0:
 			msg = 'No tienes mensajes en el blockchain'
 	except:
-		msg = "Error >:C\nIntenta más tarde..."
+		msg = "Error >:C\nIntenta más tarde...\n\n"
+		msg += "Modo de uso: /mensajes cantidad"
 
 	logger.info("mensajes(%i) => %s" % (user.id, msg))
 	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
@@ -108,12 +114,14 @@ def balance(bot, update):
 
 def azar(bot, update, args):
 	try:
-		maxnum = randint(0, int(args[0]))
-		msg = "Número al azar: %s\n" % (maxnum,)
+		um = int(args[0])
+		maxnum = randint(0, num)
+		msg = "Número al azar: %s\n" % (maxnum)
+
 	except Exception as e:
 		logger.info(e)
 		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /azar [numero]"
+		msg += "Modo de uso: /azar numero"
 
 	logger.info("random(%i) => %s" % (update.message.from_user.id, msg))
 	update.message.reply_text("%s" % msg)
@@ -135,7 +143,7 @@ def main():
 	dp.add_handler(CommandHandler("qr", qr))
 	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("balance", balance))
-	dp.add_handler(CommandHandler("mensajes", mensajes))
+	dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
 	dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
 	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
