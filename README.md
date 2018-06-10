@@ -15,7 +15,7 @@ Con pip instalaremos los paquetes python necesarios para ejecutar nuestro bot.
 
 Instalamos ahora las dependencias:
 ```
-pip3 install setuptools python-telegram-bot bitcoin
+pip3 install setuptools python-telegram-bot bitcoin requests
 ```
 Instalamos [git](https://git-scm.com/) para poder clonar el proyecto.
 ```
