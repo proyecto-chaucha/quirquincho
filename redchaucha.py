@@ -1,4 +1,4 @@
-from config import salt, satoshi, fee, magic
+from config import salt, COIN, fee, magic
 from requests import get, post
 from bitcoin import *
 import binascii
@@ -33,7 +33,7 @@ def getTx(addr, max_read):
 def OP_RETURN_payload(string):
 	metadata = bytes(string, 'utf-8')
 	metadata_len= len(metadata)
-	
+
 	if metadata_len<=75:
 		payload=bytearray((metadata_len,))+metadata # length byte + data (https://en.bitcoin.it/wiki/Script)
 	elif metadata_len<=256:
@@ -46,7 +46,7 @@ def OP_RETURN_payload(string):
 def sendTx(info, amount, receptor, op_return):
 		addr = info[0]
 		privkey = info[1]
-		
+
 		info = getbalance(addr)
 		confirmed_balance = info[0]
 		inputs = info[1]
@@ -62,7 +62,7 @@ def sendTx(info, amount, receptor, op_return):
 
 		else:
 			# Transformar valores a Chatoshis
-			used_amount = int(amount*satoshi)
+			used_amount = int(amount*COIN)
 
 			# Utilizar solo las unspent que se necesiten
 			used_balance = 0
@@ -73,8 +73,8 @@ def sendTx(info, amount, receptor, op_return):
 				used_inputs.append(i)
 				if used_balance > used_amount:
 					break
-			
-			used_fee = int(fee*satoshi*(len(inputs)/4 + 1))
+
+			used_fee = int(fee*COIN*(len(inputs)/4 + 1))
 
 			# Output
 			outputs = []
@@ -84,7 +84,7 @@ def sendTx(info, amount, receptor, op_return):
 				outputs.append({'address' : receptor, 'value' : (used_amount - used_fee)})
 			else:
 				outputs.append({'address' : receptor, 'value' : used_amount})
-				
+
 			# Change
 			if used_balance > used_amount + used_fee:
 				outputs.append({'address' : addr, 'value' : int(used_balance - used_amount - used_fee)})
@@ -110,7 +110,7 @@ def sendTx(info, amount, receptor, op_return):
 				msg = "insight.chaucha.cl/tx/%s" % broadcasting.json()['txid']
 			except:
 				msg = broadcasting.text
-			
+
 		return msg
 
 
@@ -122,7 +122,7 @@ def getaddress(user_id):
 def getbalance(addr):
 	# Captura de balance por tx sin gastar
 	unspent = get('http://insight.chaucha.cl/api/addr/' + addr + '/utxo').json()
-		
+
 	confirmed = unconfirmed = 0
 
 	inputs = []

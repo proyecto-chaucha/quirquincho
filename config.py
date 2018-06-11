@@ -15,4 +15,4 @@ magic = 88
 fee = 0.001
 
 ## Cantidad de ceros decimales o llamados satoshis
-satoshi = 100000000
+COIN = 100000000
