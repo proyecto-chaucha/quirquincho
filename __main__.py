@@ -2,163 +2,165 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
 from config import token
 from redchaucha import *
-from random import randint
 import logging
+
+from azar import get_random_number
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def mensajes(bot, update, args):
-	try:
-		user = update.message.from_user
-		addr = getaddress(user.id)[0]
+    try:
+        user = update.message.from_user
+        addr = getaddress(user.id)[0]
 
-		max_read = int(args[0])
+        max_read = int(args[0])
 
-		if max_read > 0:
-			msg = getTx(addr, max_read)
+        if max_read > 0:
+            msg = getTx(addr, max_read)
 
-		if len(msg) == 0:
-			msg = 'No tienes mensajes en el blockchain'
-	except:
-		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /mensajes cantidad"
+        if len(msg) == 0:
+            msg = 'No tienes mensajes en el blockchain'
+    except:
+        msg = "Error >:C\nIntenta más tarde...\n\n"
+        msg += "Modo de uso: /mensajes cantidad"
 
-	logger.info("mensajes(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
+    logger.info("mensajes(%i) => %s" % (user.id, msg))
+    update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
 def op_return(bot, update, args):
-	try:
-		user = update.message.from_user
-		info = getaddress(user.id)
-		op_return = ' '.join(args)
+    try:
+        user = update.message.from_user
+        info = getaddress(user.id)
+        op_return = ' '.join(args)
 
-		if len(op_return) > 0:
-			msg = sendTx(info, 0.001, info[0], op_return)
-		else:
-			msg = "No hay mensaje, no puedo hacer nada :C"
-	except:
-		msg = "Error >:C\nIntenta más tarde..."
+        if len(op_return) > 0:
+            msg = sendTx(info, 0.001, info[0], op_return)
+        else:
+            msg = "No hay mensaje, no puedo hacer nada :C"
+    except:
+        msg = "Error >:C\nIntenta más tarde..."
 
-	logger.info("op_return(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg)
+    logger.info("op_return(%i) => %s" % (user.id, msg))
+    update.message.reply_text("%s" % msg)
 
 def start(bot, update):
-	msg =  "*Holi !*"
-	logger.info("start() => %s" % (msg))
-	update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
+    msg =  "*Holi !*"
+    logger.info("start() => %s" % (msg))
+    update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
 def qr(bot, update):
-	user = update.message.from_user
-	info = getaddress(user.id)
+    user = update.message.from_user
+    info = getaddress(user.id)
 
-	logger.info("qr(%i) => %s" % (user.id, info[0]))
-	update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])
+    logger.info("qr(%i) => %s" % (user.id, info[0]))
+    update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])
 
 def sendall(bot, update, args):
-	try:
-		user = update.message.from_user
-		info = getaddress(user.id)
+    try:
+        user = update.message.from_user
+        info = getaddress(user.id)
 
-		receptor = args[0]
+        receptor = args[0]
 
-		max_amount = getbalance(info[0])[0]
-		msg = sendTx(info, max_amount, receptor, 'Quirquincho sendall')
+        max_amount = getbalance(info[0])[0]
+        msg = sendTx(info, max_amount, receptor, 'Quirquincho sendall')
 
-	except:
-		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /sendall address"
+    except:
+        msg = "Error >:C\nIntenta más tarde...\n\n"
+        msg += "Modo de uso: /sendall address"
 
-	logger.info("sendall(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg)
+    logger.info("sendall(%i) => %s" % (user.id, msg))
+    update.message.reply_text("%s" % msg)
 
 def send(bot, update, args):
-	try:
-		user = update.message.from_user
-		info = getaddress(user.id)
+    try:
+        user = update.message.from_user
+        info = getaddress(user.id)
 
-		amount = float(args[0])
-		receptor = args[1]
+        amount = float(args[0])
+        receptor = args[1]
 
-		msg = sendTx(info, amount, receptor, 'Quirquincho')
+        msg = sendTx(info, amount, receptor, 'Quirquincho')
 
-	except:
-		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /send monto address"
+    except:
+        msg = "Error >:C\nIntenta más tarde...\n\n"
+        msg += "Modo de uso: /send monto address"
 
-	logger.info("send(%i) => %s" % (user.id, msg))
-	update.message.reply_text("%s" % msg)
+    logger.info("send(%i) => %s" % (user.id, msg))
+    update.message.reply_text("%s" % msg)
 
 
 def balance(bot, update):
-	try:
-		# Descubrimiento de address
-		user = update.message.from_user
+    try:
+        # Descubrimiento de address
+        user = update.message.from_user
 
-		addr = getaddress(user.id)[0]
-		balance = getbalance(addr)
+        addr = getaddress(user.id)[0]
+        balance = getbalance(addr)
 
-		total = balance[0] + balance[2]
+        total = balance[0] + balance[2]
 
-		# MSG
-		msg = "Tienes %f CHA en tu dirección\n"
-		msg += "%f CHA para utilizar y %f CHA sin confirmar.\n\n"
-		msg += "Tu address es %s"
+        # MSG
+        msg = "Tienes %f CHA en tu dirección\n"
+        msg += "%f CHA para utilizar y %f CHA sin confirmar.\n\n"
+        msg += "Tu address es %s"
 
-		msg = msg % (total, balance[0], balance[2], addr)
-	except:
-		msg = "No se pudo ejecutar la lectura de balance :C"
+        msg = msg % (total, balance[0], balance[2], addr)
+    except:
+        msg = "No se pudo ejecutar la lectura de balance :C"
 
-	logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', '')))
-	update.message.reply_text("%s" % msg)
+    logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', '')))
+    update.message.reply_text("%s" % msg)
 
 def azar(bot, update, args):
-	try:
-		num = int(args[0])
-		maxnum = randint(0, num)
-		msg = "Número al azar: %s\n" % (maxnum)
+    try:
+        if args:
+            max_number = args[0]
+        else:
+            max_number = 100
+        msg = "Número al azar (0, %s): %s\n" % (max_number, get_random_number(max_number))
+    except Exception as e:
+        msg = "Número al azar (0, %s): %s\n" % (100, get_random_number(100))
+        msg = "Error >:C\n%s...\n\n" % (e)
+        msg += "Modo de uso: /azar [numero|pi] por defecto es 100"
 
-	except Exception as e:
-		logger.info(e)
-		msg = "Error >:C\nIntenta más tarde...\n\n"
-		msg += "Modo de uso: /azar numero"
-
-	logger.info("random(%i) => %s" % (update.message.from_user.id, msg))
-	update.message.reply_text("%s" % msg)
+    logger.info("random(%i) => %s" % (update.message.from_user.id, msg))
+    update.message.reply_text("%s" % msg)
 
 def error(bot, update, error):
-	logger.warning('Update: "%s" - Error: "%s"' % (update, error))
+    logger.warning('Update: "%s" - Error: "%s"' % (update, error))
 
 # Main loop
 def main():
-	global quirquincho
+    global quirquincho
 
-	# Configuración
-	updater = Updater(token)
+    # Configuración
+    updater = Updater(token)
 
-	# Get the dispatcher to register handlers
-	dp = updater.dispatcher
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
 
-	# Listado de comandos
-	dp.add_handler(CommandHandler("qr", qr))
-	dp.add_handler(CommandHandler("start", start))
-	dp.add_handler(CommandHandler("balance", balance))
-	dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
-	dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
-	dp.add_handler(CommandHandler("send", send, pass_args=True))
-	dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
-	dp.add_handler(CommandHandler("azar", azar, pass_args=True))
+    # Listado de comandos
+    dp.add_handler(CommandHandler("qr", qr))
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("balance", balance))
+    dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
+    dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
+    dp.add_handler(CommandHandler("send", send, pass_args=True))
+    dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
+    dp.add_handler(CommandHandler("azar", azar, pass_args=True))
 
-	# log all errors
-	dp.add_error_handler(error)
+    # log all errors
+    dp.add_error_handler(error)
 
-	quirquincho = getaddress('Quirquincho')
-	# Inicio de bot
-	logger.info("Quirquincho V 2.0 - %s" % quirquincho[0])
-	updater.start_polling()
+    quirquincho = getaddress('Quirquincho')
+    # Inicio de bot
+    logger.info("Quirquincho V 2.0 - %s" % quirquincho[0])
+    updater.start_polling()
 
-	updater.idle()
+    updater.idle()
 
 
 if __name__ == '__main__':
-	main()
+    main()
