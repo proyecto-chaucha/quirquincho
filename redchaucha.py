@@ -1,4 +1,4 @@
-from config import salt, COIN, fee, magic
+from config import salt, COIN, base_fee, fee_per_input, magic
 from requests import get, post
 from bitcoin import *
 import binascii
@@ -74,7 +74,7 @@ def sendTx(info, amount, receptor, op_return):
 				if used_balance > used_amount:
 					break
 
-			used_fee = int(fee*COIN*(len(inputs)/4 + 1))
+			used_fee = int((base_fee + fee_per_input*len(inputs))*COIN)
 
 			# Output
 			outputs = []

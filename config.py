@@ -12,7 +12,8 @@ salt = "Aquí debes incluir una clave secreta. Se sugiere el resultado de la eje
 magic = 88
 
 ## Pago a minero
-fee = 0.001
+base_fee = 0.000452
+fee_per_input = 0.000296
 
 ## Cantidad de ceros decimales o llamados satoshis
 COIN = 100000000
