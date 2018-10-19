@@ -1,5 +1,7 @@
 # Quirquincho
 
+*Read this in other languages: [Spanish](README.md), [English](README.en.md)*
+
 Este es el código fuente del bot Quirquincho ([QuirquinchoBot](https://t.me/QuirquinchoBot)), utilizado para enviar y recibir [Chauchas](https://www.chaucha.cl) a través de Telegram.
 
 ## Instalación
