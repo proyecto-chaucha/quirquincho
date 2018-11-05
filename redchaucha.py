@@ -33,24 +33,20 @@ def getTx(addr, max_read):
 
 def OP_RETURN_payload(string):
 	metadata = bytes(string, 'utf-8')
-	metadata_len= len(metadata)
+	metadata_len = len(metadata)
 
-	if metadata_len<=75:
-		payload=bytearray((metadata_len,))+metadata # length byte + data (https://en.bitcoin.it/wiki/Script)
-	elif metadata_len<=256:
-		payload=b"\x4c"+bytearray((metadata_len,))+metadata # OP_PUSHDATA1 format
+	if metadata_len <= 75:
+		payload = bytearray((metadata_len,)) + metadata
+	elif metadata_len <= 256:
+		payload = b"\x4c" + bytearray((metadata_len,)) + metadata
 	else:
-		payload=b"\x4d"+bytearray((metadata_len%256,))+bytearray((int(metadata_len/256),))+metadata # OP_PUSHDATA2 format
+		payload = b"\x4d" + bytearray((metadata_len%256,)) + bytearray((int(metadata_len/256),)) + metadata
 
 	return payload
 
 def sendTx(info, amount, receptor, op_return):
-		addr = info[0]
-		privkey = info[1]
-
-		info = getbalance(addr)
-		confirmed_balance = info[0]
-		inputs = info[1]
+		addr, privkey = info
+		confirmed_balance, inputs = getbalance(addr)
 
 		if not len(receptor) == 34 and receptor[0] == 'c':
 			msg = "Dirección inválida"
@@ -102,8 +98,6 @@ def sendTx(info, amount, receptor, op_return):
 			# Firma
 			for i in range(len(used_inputs)):
 				tx = sign(tx, i, privkey)
-
-			print(len(tx))
 
 			broadcasting = post('http://insight.chaucha.cl/api/tx/send', data={'rawtx' : tx})
 

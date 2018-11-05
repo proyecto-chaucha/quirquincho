@@ -61,9 +61,9 @@ def sendall(bot, update, args):
         user = update.message.from_user
         info = getaddress(user.id)
 
+        max_amount = getbalance(info[0])[0]
         receptor = args[0]
 
-        max_amount = getbalance(info[0])[0]
         msg = sendTx(info, max_amount, receptor, 'Quirquincho sendall')
 
     except:
