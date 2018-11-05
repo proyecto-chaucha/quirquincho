@@ -5,8 +5,6 @@ from random import randint
 from redchaucha import *
 import logging
 
-from azar import get_random_number
-
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
