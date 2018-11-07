@@ -112,6 +112,11 @@ def balance(bot, update):
     logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', '')))
     update.message.reply_text("%s" % msg)
 
+def dice(bot, update):
+    msg = ''
+    logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', '')))
+    update.message.reply_text("%s" % msg)
+
 def azar(bot, update, args):
     try:
         max_number = int(args[0])
@@ -140,6 +145,7 @@ def main():
 
     # Listado de comandos
     dp.add_handler(CommandHandler("qr", qr))
+    dp.add_handler(CommandHandler("dice", dice))
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("balance", balance))
     dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
