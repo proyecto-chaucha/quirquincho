@@ -1,6 +1,6 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
-from config import token
+from config import token, salt
 from random import randint
 from redchaucha import *
 import logging
@@ -113,7 +113,15 @@ def balance(bot, update):
     update.message.reply_text("%s" % msg)
 
 def dice(bot, update):
-    msg = ''
+    try:
+        user = update.message.from_user
+        num = randint(0, 1)
+        if num:
+            msg = 'ganasteee'
+        else:
+            msg = 'perdisteee'
+    except:
+        msg = 'Error >:C'
     logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', '')))
     update.message.reply_text("%s" % msg)
 
@@ -157,7 +165,7 @@ def main():
     # log all errors
     dp.add_error_handler(error)
 
-    quirquincho = getaddress('Quirquincho')
+    quirquincho = getaddress('Quirquincho' + str(salt))
     # Inicio de bot
     logger.info("Quirquincho V 2.0 - %s" % quirquincho[0])
     updater.start_polling()
