@@ -44,9 +44,9 @@ def OP_RETURN_payload(string):
 
 	return payload
 
-def sendTx(info, amount, receptor, op_return):
+def sendTx(info, amount, receptor, op_return = ''):
 		addr, privkey = info
-		confirmed_balance, inputs = getbalance(addr)
+		confirmed_balance, inputs, unconfirmed = getbalance(addr)
 
 		if not len(receptor) == 34 and receptor[0] == 'c':
 			msg = "Dirección inválida"
@@ -122,7 +122,7 @@ def getbalance(addr):
 
 	inputs = []
 	for i in unspent:
-		if i['confirmations'] >= 6:
+		if i['confirmations'] >= 1:
 			confirmed += i['amount']
 			inputs_tx = {'output' : i['txid'] + ':' + str(i['vout']), 'value' : i['satoshis'], 'address' : i['address']}
 			inputs.append(inputs_tx)

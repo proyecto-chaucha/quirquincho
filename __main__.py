@@ -109,20 +109,27 @@ def balance(bot, update):
     except:
         msg = "No se pudo ejecutar la lectura de balance :C"
 
-    logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', '')))
+    logger.info("balance(%i) => %s" % (user.id, msg.replace('\n', ' - ')))
     update.message.reply_text("%s" % msg)
 
-def dice(bot, update):
+def dice(bot, update, args):
     try:
         user = update.message.from_user
+        usrInfo = getaddress(user.id)
         num = randint(0, 1)
+        msg = '%f CHA\n' % float(args[0])
+
         if num:
-            msg = 'ganasteee'
+            msg = 'perdiste ' + msg
+            msg += sendTx(usrInfo, float(args[0]), quirquincho[0], '/dice')
         else:
-            msg = 'perdisteee'
+            msg = 'ganaste ' + msg
+            msg += sendTx(quirquincho, float(args[0]), usrInfo[0], '/dice')
     except:
-        msg = 'Error >:C'
-    logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', '')))
+        msg = "Error >:C\nIntenta más tarde...\n\n"
+        msg += 'Modo de uso: /dice cantidad'
+
+    logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', ' - ')))
     update.message.reply_text("%s" % msg)
 
 def azar(bot, update, args):
@@ -153,9 +160,9 @@ def main():
 
     # Listado de comandos
     dp.add_handler(CommandHandler("qr", qr))
-    dp.add_handler(CommandHandler("dice", dice))
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("balance", balance))
+    dp.add_handler(CommandHandler("dice", dice, pass_args=True))
     dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
     dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
     dp.add_handler(CommandHandler("send", send, pass_args=True))
