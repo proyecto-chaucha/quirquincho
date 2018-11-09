@@ -119,7 +119,9 @@ def dice(bot, update, args):
         num = randint(0, 1)
         msg = '%f CHA\n' % float(args[0])
 
-        if num:
+        usrBalance = getbalance(usrInfo[0])[0]
+
+        if num and usrBalance > 0:
             msg = 'perdiste ' + msg
             msg += sendTx(usrInfo, float(args[0]), quirquincho[0], '/dice')
         else:
