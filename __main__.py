@@ -118,8 +118,9 @@ def dice(bot, update, args):
         usrInfo = getaddress(user.id)
 
         usrBalance = getbalance(usrInfo[0])[0]
+        botBalance = getbalance(quirquincho[0])[0]
 
-        if  usrBalance > 0:
+        if  usrBalance > 0 and botBalance > 0:
             num = randint(0, 1)
             msg = '%f CHA\n' % float(args[0])
             if num:
