@@ -114,28 +114,31 @@ def balance(bot, update):
 
 def dice(bot, update, args):
     try:
+        
         user = update.message.from_user
-        usrInfo = getaddress(user.id)
-        bet = float(args[0])
-
-        usrBalance = getbalance(usrInfo[0])[0]
+        usrInfo = getaddress(user.id)        
         botBalance = getbalance(quirquincho[0])[0]
+        usrBalance = getbalance(usrInfo[0])[0]
 
-        if  usrBalance >= bet and botBalance > 0 and bet > 0.001:
-            num = randint(0, 1)
-            msg = '%f CHA\n' % float(args[0])
-            if num:
-                msg = 'perdiste ' + msg
-                msg += sendTx(usrInfo, bet, quirquincho[0], '/dice')
-            else:
-                msg = 'ganaste ' + msg
-                msg += sendTx(quirquincho, bet, usrInfo[0], '/dice')
+        if args[0] == 'house':
+            msg = 'Aún puedes ganar %f chauchas!' % float(botBalance)
         else:
-            msg = 'no tienes chauchas'
+            bet = float(args[0])
+            if  usrBalance >= bet and botBalance > 0 and bet > 0.001:
+                num = randint(0, 1)
+                msg = '%f CHA\n' % float(args[0])
+                if num:
+                    msg = 'Perdiste ' + msg
+                    msg += sendTx(usrInfo, bet, quirquincho[0], '/dice')
+                else:
+                    msg = 'Ganaste ' + msg
+                    msg += sendTx(quirquincho, bet, usrInfo[0], '/dice')
+            else:
+                msg = 'No tienes chauchas suficientes'
 
     except:
         msg = "Error >:C\nIntenta más tarde...\n\n"
-        msg += 'Modo de uso: /dice cantidad'
+        msg += 'Modo de uso: \n - /dice cantidad\n - /dice house'
 
     logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', ' - ')))
     update.message.reply_text("%s" % msg)
