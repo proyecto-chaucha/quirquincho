@@ -116,19 +116,20 @@ def dice(bot, update, args):
     try:
         user = update.message.from_user
         usrInfo = getaddress(user.id)
+        bet = float(args[0])
 
         usrBalance = getbalance(usrInfo[0])[0]
         botBalance = getbalance(quirquincho[0])[0]
 
-        if  usrBalance > 0 and botBalance > 0 and usrBalance >= float(args[0]):
+        if  usrBalance >= bet and botBalance > 0 and bet > 0.001:
             num = randint(0, 1)
             msg = '%f CHA\n' % float(args[0])
             if num:
                 msg = 'perdiste ' + msg
-                msg += sendTx(usrInfo, float(args[0]), quirquincho[0], '/dice')
+                msg += sendTx(usrInfo, bet, quirquincho[0], '/dice')
             else:
                 msg = 'ganaste ' + msg
-                msg += sendTx(quirquincho, float(args[0]), usrInfo[0], '/dice')
+                msg += sendTx(quirquincho, bet, usrInfo[0], '/dice')
         else:
             msg = 'no tienes chauchas'
 
