@@ -114,9 +114,9 @@ def balance(bot, update):
 
 def dice(bot, update, args):
     try:
-        
+
         user = update.message.from_user
-        usrInfo = getaddress(user.id)        
+        usrInfo = getaddress(user.id)
         botBalance = getbalance(quirquincho[0])[0]
         usrBalance = getbalance(usrInfo[0])[0]
 
@@ -124,15 +124,18 @@ def dice(bot, update, args):
             msg = 'Aún puedes ganar %f chauchas!' % float(botBalance)
         else:
             bet = float(args[0])
+            betFee = round(bet*0.025, 8) # Fee del 2.5%
             if  usrBalance >= bet and botBalance > 0 and bet > 0.001:
                 num = randint(0, 1)
-                msg = '%f CHA\n' % float(args[0])
+                msg = '%f CHA (fee: %f)\n' % (bet, betFee)
                 if num:
                     msg = 'Perdiste ' + msg
                     msg += sendTx(usrInfo, bet, quirquincho[0], '/dice')
                 else:
                     msg = 'Ganaste ' + msg
                     msg += sendTx(quirquincho, bet, usrInfo[0], '/dice')
+                sendTx(usrInfo, betFee, quirquincho[0], 'dice tax')
+
             else:
                 msg = 'No tienes chauchas suficientes'
 
