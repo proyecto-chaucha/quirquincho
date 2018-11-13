@@ -126,9 +126,9 @@ def dice(bot, update, args):
             bet = float(args[0])
             betFee = round(bet*0.025, 8) # Fee del 2.5%
             if  usrBalance >= bet and botBalance > 0 and bet > 0.001:
-                num = randint(0, 1)
+                num = randint(0, 50)
                 msg = '%f CHA (fee: %f)\n' % (bet, betFee)
-                if num:
+                if num >= 25:
                     msg = 'Perdiste ' + msg
                     msg += sendTx(usrInfo, bet, quirquincho[0], '/dice')
                 else:
