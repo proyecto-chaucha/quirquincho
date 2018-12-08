@@ -5,12 +5,12 @@ import binascii
 import time
 
 def getTx(addr, max_read):
-	info = get('https://explorer.cha.terahash.cl/api/txs/?address=' + addr).json()
+	info = get('http://insight.chaucha.cl/api/txs/?address=' + addr).json()
 	msg = ''
 	counter = 0
 
 	for x in range(int(info['pagesTotal'])):
-		info = get('https://explorer.cha.terahash.cl/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
+		info = get('http://insight.chaucha.cl/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
 		for i in info['txs']:
 			for j in i['vout']:
 				hex_script = j['scriptPubKey']['hex']
@@ -25,7 +25,7 @@ def getTx(addr, max_read):
 
 					if not msg_str == 'Quirquincho' and not msg_str == 'Quirquincho sendall':
 						if counter < max_read:
-							msg += '[' + fecha +'](https://explorer.cha.terahash.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
+							msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
 							counter +=1
 
 	return msg
@@ -99,7 +99,7 @@ def sendTx(info, amount, receptor, op_return = ''):
 			for i in range(len(used_inputs)):
 				tx = sign(tx, i, privkey)
 
-			broadcasting = post('https://explorer.cha.terahash.cl/api/tx/send', data={'rawtx' : tx})
+			broadcasting = post('http://insight.chaucha.cl/api/tx/send', data={'rawtx' : tx})
 
 			try:
 				msg = "explorer.cha.terahash.cl/tx/%s" % broadcasting.json()['txid']
@@ -116,7 +116,7 @@ def getaddress(user_id):
 
 def getbalance(addr):
 	# Captura de balance por tx sin gastar
-	unspent = get('https://explorer.cha.terahash.cl/api/addr/' + addr + '/utxo').json()
+	unspent = get('http://insight.chaucha.cl/api/addr/' + addr + '/utxo').json()
 
 	confirmed = unconfirmed = 0
 
