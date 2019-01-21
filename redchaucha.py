@@ -23,7 +23,7 @@ def getTx(addr, max_read):
 					msg_str = binascii.a2b_hex(sub_script).decode('utf-8', errors='ignore')
 					fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
 
-					if not msg_str == 'Quirquincho' and not msg_str == 'Quirquincho sendall':
+					if msg_str.find('Quirquincho') < 0 and msg_str.find('/dice') < 0:
 						if counter < max_read:
 							msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
 							counter +=1
