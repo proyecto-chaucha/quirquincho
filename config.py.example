@@ -4,7 +4,6 @@ token = "Aquí debes ingresar el Token entregado por el @BotFather de Telegram"
 # python -c "import os; print(repr(os.urandom(32)));"
 salt = "Aquí debes incluir una clave secreta. Se sugiere el resultado de la ejecución de la línea 4"
 
-
 #**** No modificar los siguientes campos *****#
 #* Network *#
 

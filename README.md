@@ -34,7 +34,7 @@ Una vez clonado el repositorio, entramos a la carpeta **quirquincho/** y modific
 
 ## Configurando
 
-En el archivo ***config.py***, deben indicarse los siguientes campos:
+Cambia el nombre del archivo **config.py.example** a **config.py** e ingresa los siguientes campos:
 
 ### Token
 Este token es entregado por el [@BotFather](https://t.me/BotFather) de telegram, una vez que creado un nuevo bot con el comando ***/newbot***.
