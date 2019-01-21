@@ -17,3 +17,6 @@ fee_per_input = 0.000296
 
 ## Cantidad de ceros decimales o llamados satoshis
 COIN = 100000000
+
+# API URL
+insight = 'https://explorer.cha.terahash.cl/'

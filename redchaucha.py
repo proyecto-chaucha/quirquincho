@@ -1,16 +1,16 @@
-from config import salt, COIN, base_fee, fee_per_input, magic
+from config import salt, COIN, base_fee, fee_per_input, magic, insight
 from requests import get, post
 from bitcoin import *
 import binascii
 import time
 
 def getTx(addr, max_read):
-	info = get('http://insight.chaucha.cl/api/txs/?address=' + addr).json()
+	info = get(insight + '/api/txs/?address=' + addr).json()
 	msg = ''
 	counter = 0
 
 	for x in range(int(info['pagesTotal'])):
-		info = get('http://insight.chaucha.cl/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
+		info = get(insight + '/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
 		for i in info['txs']:
 			for j in i['vout']:
 				hex_script = j['scriptPubKey']['hex']
@@ -99,7 +99,7 @@ def sendTx(info, amount, receptor, op_return = ''):
 			for i in range(len(used_inputs)):
 				tx = sign(tx, i, privkey)
 
-			broadcasting = post('http://insight.chaucha.cl/api/tx/send', data={'rawtx' : tx})
+			broadcasting = post(insight + '/api/tx/send', data={'rawtx' : tx})
 
 			try:
 				msg = "explorer.cha.terahash.cl/tx/%s" % broadcasting.json()['txid']
@@ -116,7 +116,7 @@ def getaddress(user_id):
 
 def getbalance(addr):
 	# Captura de balance por tx sin gastar
-	unspent = get('http://insight.chaucha.cl/api/addr/' + addr + '/utxo').json()
+	unspent = get(insight + '/api/addr/' + addr + '/utxo').json()
 
 	confirmed = unconfirmed = 0
 
