@@ -55,23 +55,6 @@ def qr(bot, update):
     logger.info("qr(%i) => %s" % (user.id, info[0]))
     update.message.reply_photo(photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])
 
-def sendall(bot, update, args):
-    try:
-        user = update.message.from_user
-        info = getaddress(user.id)
-
-        max_amount = getbalance(info[0])[0]
-        receptor = args[0]
-
-        msg = sendTx(info, max_amount, receptor, 'Quirquincho sendall')
-
-    except:
-        msg = "Error >:C\nIntenta más tarde...\n\n"
-        msg += "Modo de uso: /sendall address"
-
-    logger.info("sendall(%i) => %s" % (user.id, msg))
-    update.message.reply_text("%s" % msg)
-
 def send(bot, update, args):
     try:
         user = update.message.from_user
@@ -180,7 +163,6 @@ def main():
     dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
     dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
     dp.add_handler(CommandHandler("send", send, pass_args=True))
-    dp.add_handler(CommandHandler("sendall", sendall, pass_args=True))
     dp.add_handler(CommandHandler("azar", azar, pass_args=True))
 
     # log all errors
