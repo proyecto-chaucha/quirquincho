@@ -1,8 +1,10 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
-from config import token, salt
+from config import token, salt, definejson
 from random import randint
 from redchaucha import *
+from setexredis import *
+#from datetime import datetime
 import logging
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -129,6 +131,67 @@ def dice(bot, update, args):
     logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', ' - ')))
     update.message.reply_text("%s" % msg)
 
+
+
+    
+
+def define(bot, update, args):
+    try:
+
+        word =  args[0] # Si no viene el argumento se cae
+        originalword = args[0]
+        if len(args) > 1:
+            word =  " ".join(args)
+        word = word.lower()
+
+        if args[0] == 'url':
+            msg = definejson
+
+        user = update.message.from_user        
+        usrInfo = getaddress(user.id)
+        botBalance = getbalance(quirquincho[0])[0]
+        botBalanceDefine = getbalance(quirquinchoDefine[0])[0]
+
+        #print(botBalanceDefine)
+        usrBalance = getbalance(usrInfo[0])[0]
+
+        
+        info = get(definejson)
+        # Se setea el encoding a ISO-8859-1
+        info.encoding = info.apparent_encoding
+        info = info.json()
+        
+        val = 0
+        for definitions in info:
+            if definitions['title'].lower() == word:
+                retorno = redisWeekValidation(word,user)
+                msg = retorno + "*%s*: %s" % (originalword.capitalize() , definitions['definition'])                
+                if retorno == "" and redisDayValidation(word,user):
+                    textoTransaccion = sendTx(quirquinchoDefine, 1, usrInfo[0], '/define')
+                    if not textoTransaccion.startswith("explorer"):
+                        logger.info("/define sendTx (%i) => %s" % (user.id, textoTransaccion))
+                    else:
+                        texto = "!!*Has ganado una chaucha*!!\n\nQuirquincho te la enviará a tu direccion: %s\n\n" % getaddress(user.id)[0]
+                        msg = texto+msg+"\n\n"
+                        msg += textoTransaccion
+                elif retorno == "":
+                    msg = "!!*Busca una nueva definición y obtén tu chaucha diaria*!!.\n\n"+msg # Este tiene un pto para identificar donde cae
+
+                val = 1
+                break
+        if val == 0:
+            msg = "No  existe la definicion  :'( \n\n"
+            msg += "Revisar el link %s para más definiciones" % definejson
+            #msg += "Si quieres proponer esta definicion utiliza el comando adddefinition"
+    except Exception as e: 
+        print(e)
+        msg = "Error >:C\nIntenta más tarde...\n\n"
+        msg += 'Modo de uso: \n - /define concepto'
+
+    #logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', ' - ')))
+    update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
+
+
 def azar(bot, update, args):
     try:
         max_number = int(args[0])
@@ -148,6 +211,7 @@ def error(bot, update, error):
 # Main loop
 def main():
     global quirquincho
+    global quirquinchoDefine
 
     # Configuración
     updater = Updater(token)
@@ -160,6 +224,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("balance", balance))
     dp.add_handler(CommandHandler("dice", dice, pass_args=True))
+    dp.add_handler(CommandHandler("define", define, pass_args=True))
     dp.add_handler(CommandHandler("mensajes", mensajes, pass_args=True))
     dp.add_handler(CommandHandler("op_return", op_return, pass_args=True))
     dp.add_handler(CommandHandler("send", send, pass_args=True))
@@ -169,8 +234,12 @@ def main():
     dp.add_error_handler(error)
 
     quirquincho = getaddress('Quirquincho' + str(salt))
+    # Se hace una wallet nueva para el traspaso de coins
+    quirquinchoDefine = getaddress(str(salt))
     # Inicio de bot
     logger.info("Quirquincho V 2.0 - %s" % quirquincho[0])
+    logger.info("QuirquinchoDefine V 2.0 - %s" % quirquinchoDefine[0])
+    
     updater.start_polling()
 
     updater.idle()

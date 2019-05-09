@@ -6,7 +6,7 @@ Este es el código fuente del bot Quirquincho ([QuirquinchoBot](https://t.me/Qui
 
 ## Instalación
 
-Lo primero a realizar es instalar las dependencias necesairas para que el programa pueda ser ejecutado.
+Lo primero a realizar es instalar las dependencias necesarias para que el programa pueda ser ejecutado.
 
 El programa [pip](https://pip.pypa.io/en/stable/), nos permite instalar programas que serán de utilidad en este proyecto. En sistemas operativos basados en [Debian](https://www.debian.org/index.es.html), debemos ejecutar lo siguiente:
 
@@ -17,7 +17,7 @@ Con pip instalaremos los paquetes python necesarios para ejecutar nuestro bot.
 
 Instalamos ahora las dependencias:
 ```
-pip3 install setuptools python-telegram-bot bitcoin requests
+pip3 install setuptools python-telegram-bot bitcoin requests redis
 ```
 Instalamos [git](https://git-scm.com/) para poder clonar el proyecto.
 ```
