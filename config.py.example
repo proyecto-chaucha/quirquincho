@@ -19,3 +19,6 @@ COIN = 100000000
 
 # API URL
 insight = 'https://explorer.cha.terahash.cl/'
+
+# JSON Define
+definejson = 'https://raw.githubusercontent.com/panterozo/api-chaucha/master/glosario.json'
