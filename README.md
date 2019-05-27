@@ -122,3 +122,21 @@ docker run -it quirquincho
 ```
 De esta manera, tendremos nuestro bot corriendo desde un **Docker**.
 
+
+## Configurar listado de comandos
+
+Desde el botfather ejecutar el comando y seleccionar bot:
+
+```
+/setcommands
+```
+
+Pegamos el siguiente texto (En construccion):
+
+```
+cha - Muestra el precio de la Chaucha
+luk - Muestra el precio de la Luka
+btc - Muestra el precio del Bitcoin
+eth - Muestra el precio de Ethereum
+bch - Muestra el precio del Bitcoin Cash
+```
