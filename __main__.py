@@ -6,7 +6,7 @@ from redchaucha import *
 from setexredis import *
 import logging
 
-from precios import precio, btc, bch, eth, cha, luk
+from precios import precio
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -231,11 +231,6 @@ def main():
     dp.add_handler(CommandHandler("send", send, pass_args=True))
     dp.add_handler(CommandHandler("azar", azar, pass_args=True))
     dp.add_handler(CommandHandler("precio", precio, pass_args=True))
-    dp.add_handler(CommandHandler("btc", btc, pass_args=True))
-    dp.add_handler(CommandHandler("eth", eth, pass_args=True))
-    dp.add_handler(CommandHandler("bch", bch, pass_args=True))
-    dp.add_handler(CommandHandler("cha", cha))
-    dp.add_handler(CommandHandler("luk", luk))
 
     # log all errors
     dp.add_error_handler(error)
