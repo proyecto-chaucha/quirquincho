@@ -53,5 +53,4 @@ def _precio(crypto):
     data = response.json()
     clp_price = data["%sCLP" % crypto]["last"]
     usd_price = data["%sUSD" % crypto]["last"]
-    print(type(usd_price))
     return "1 {} ({:3,.2f} 🇺🇸) = {:3,.0f} 🇨🇱".format(crypto, usd_price, clp_price)
