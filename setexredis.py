@@ -24,9 +24,12 @@ def redisDayValidation( concept, user ):
 	if r.exists("valordiario") == 0: # Si el concepto diario no existe, se crea y paga
 		now = datetime.datetime.now() # Ahora
 		tomorrow = now + datetime.timedelta(days = 1) # Mañana
-		week = now + datetime.timedelta(days = 7) # 1 Semana
-		# Segundos hasta medianoche de mañana
-		seconds_until_midnight = (tomorrow.replace(hour=0, minute=0, second=0, microsecond=0) - now).total_seconds()
+		week = now + datetime.timedelta(days = 14) # 2 Semanas. Implica más conceptos
+		# Segundos hasta el día siguiente en la mañana, entre 9 y 13, entre 0 y 59 min
+		# Con esto evito el posible bot que a las 00 consulta al privado
+		myhour = randint(9, 13)
+		mymin = randint(0,59)
+		seconds_until_midnight = (tomorrow.replace(hour=myhour, minute=mymin, second=0, microsecond=0) - now).total_seconds()
 		# Segundos hasta proxima semana
 		seconds_until_oneweek_midnight = (week.replace(hour=0, minute=0, second=0, microsecond=0) - now).total_seconds()
 
@@ -45,3 +48,19 @@ def redisDayValidation( concept, user ):
 		return True
 
 	return False
+
+
+def getRedisPriceCoin( crypto, user ):
+	msg = ""
+	r = redis.StrictRedis() # obtengo instancia de Redis	
+	logger.info("getRedisPriceCoin(%i) => %s" % (user.id,crypto))
+	if r.exists(crypto) != 0:
+		return r.get(crypto)
+	return ""
+
+def setRedisPriceCoin( crypto, user, valor ):
+	msg = ""
+	r = redis.StrictRedis() # obtengo instancia de Redis	
+	logger.info("setRedisPriceCoin(%i) => %s" % (user.id,crypto))	
+	r.setex(crypto, 60, valor) 
+	return ""

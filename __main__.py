@@ -189,7 +189,7 @@ def define(bot, update, args):
         msg = "Error >:C\nIntenta más tarde...\n\n"
         msg += 'Modo de uso: \n - /define concepto'
 
-    #logger.info("dice(%i) => %s" % (user.id, msg.replace('\n', ' - ')))
+    #logger.info("define(%s) => %s" % (user.username, msg.replace('\n', ' - ')))
     update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
 

@@ -1,12 +1,12 @@
 import requests
 import logging
+from setexredis import *
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 API_BTC = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/short?crypto=%s&fiat=USD,CLP'
-
 API_ORIONX = 'https://stats.orionx.com/ticker'
 
 
@@ -17,60 +17,32 @@ def precio(bot, update, args):
         else:
             crypto = 'BTC'
 
-        if crypto in ('CHA', 'LUK'):
-            msg = _orionx('%sCLP' % crypto)
+        if crypto in ('CHA', 'TRX', 'XLM', 'DASH', 'DAI', 'LUK', 'BNB'):
+            msg = _orionx('%sCLP' % crypto,update)
         else:
             msg = _precio(crypto)
     except Exception as e:
         logger.error(str(e))
         msg = "Error >:(\n\n"
-        msg += "Modo de uso: /precio [BTC|LTC|XMR|ETH|BCH|XRP|XLM]"
+        msg += "Modo de uso: /precio [CHA|BTC|LTC|XMR|ETH|BCH|XRP|XLM|DASH|DAI|LUK]"
 
     logger.info("price(%i) => %s" % (update.message.from_user.id, msg))
     update.message.reply_text("%s" % msg)
 
 
-def btc(bot, update, args):
-    precio(bot, update, ('BTC',))
+def _orionx(crypto,update):
+    user = update.message.from_user
+    priceMem = getRedisPriceCoin(crypto,user)
+    if priceMem != "":
+        return "1 {} = {:3,.0f} 🇨🇱".format(crypto.replace('CLP', ''), int(priceMem))
+    else:
+        response = requests.get(API_ORIONX)
+        if response.status_code != 200:
+            return 'Error al obtener el precio desde Orionx'
 
-
-def eth(bot, update, args):
-    precio(bot, update, ('ETH',))
-
-
-def bch(bot, update, args):
-    precio(bot, update, ('BCH',))
-
-
-def cha(bot, update):
-    try:
-        msg = _orionx("CHACLP")
-    except Exception as e:
-        logger.error(str(e))
-        msg = "Error >:("
-
-    logger.info("cha(%i) => %s" % (update.message.from_user.id, msg))
-    update.message.reply_text("%s" % msg)
-
-
-def luk(bot, update):
-    try:
-        msg = _orionx("LUKCLP")
-    except Exception as e:
-        logger.error(str(e))
-        msg = "Error >:("
-
-    logger.info("luk(%i) => %s" % (update.message.from_user.id, msg))
-    update.message.reply_text("%s" % msg)
-
-
-def _orionx(crypto):
-    response = requests.get(API_ORIONX)
-    if response.status_code != 200:
-        return 'Error al obtener el precio desde Orionx'
-
-    price = int(response.json().get(crypto).get('lastPrice'))
-    return "1 %s = %d 🇨🇱" % (crypto.replace('CLP', ''), price)
+        price = int(response.json().get(crypto).get('lastPrice'))
+        setRedisPriceCoin(crypto,user,price)
+        return "1 {} = {:3,.0f} 🇨🇱".format(crypto.replace('CLP', ''), price)
 
 
 def _precio(crypto):
@@ -81,4 +53,5 @@ def _precio(crypto):
     data = response.json()
     clp_price = data["%sCLP" % crypto]["last"]
     usd_price = data["%sUSD" % crypto]["last"]
+    print(type(usd_price))
     return "1 {} ({:3,.2f} 🇺🇸) = {:3,.0f} 🇨🇱".format(crypto, usd_price, clp_price)

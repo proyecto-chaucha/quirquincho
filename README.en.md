@@ -17,7 +17,7 @@ With pip we will install the python packages needed to run our bot.
  
 Now we will install the premises:
 ```
-pip3 install setuptools python-telegram-bot bitcoin requests
+pip3 install setuptools python-telegram-bot bitcoin requests redis
 ```
 We install [git](https://git-scm.com/) to clone the project.
 ```
@@ -99,7 +99,7 @@ RUN apk add --no-cache python3 && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --upgrade pip setuptools
 # We install the python package for Telegram, bitcoin package and requests package***
-RUN pip3 install python-telegram-bot bitcoin requests
+RUN pip3 install python-telegram-bot bitcoin requests redis
 # We define our work space in the container
 WORKDIR /usr/src/quirquincho
 # We copy our source to the container

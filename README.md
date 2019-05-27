@@ -100,7 +100,7 @@ RUN apk add --no-cache python3 && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --upgrade pip setuptools
 # Instalamos paquete pyton para telegram, paquete bitcoin y paquete requests
-RUN pip3 install python-telegram-bot bitcoin requests
+RUN pip3 install python-telegram-bot bitcoin requests redis
 # Definimos nuestro espacio de trabajo en el container
 WORKDIR /usr/src/quirquincho
 # Copiamos nuestro fuente al container
@@ -125,7 +125,7 @@ De esta manera, tendremos nuestro bot corriendo desde un **Docker**.
 
 ## Configurar listado de comandos
 
-Desde el botfather ejecutar el comando y seleccionar bot:
+Desde el  [@BotFather](https://t.me/BotFather) ejecutar el siguiente comando y seleccionar bot:
 
 ```
 /setcommands
@@ -134,9 +134,13 @@ Desde el botfather ejecutar el comando y seleccionar bot:
 Pegamos el siguiente texto (En construccion):
 
 ```
-cha - Muestra el precio de la Chaucha
-luk - Muestra el precio de la Luka
-btc - Muestra el precio del Bitcoin
-eth - Muestra el precio de Ethereum
-bch - Muestra el precio del Bitcoin Cash
+balance - consultar saldo y address
+send - enviar chauchas
+sendall - enviar todas tus chauchas (deprecado)
+qr - código qr de tu address
+start - mensaje de bienvenida
+op_return - almacena información en el blockchain
+define - busca definiciones de torpedo chauchistico
+precio - muestra el precio de ciertas monedas
+azar - retorna un número al azar
 ```
