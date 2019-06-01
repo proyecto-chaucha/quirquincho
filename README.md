@@ -143,4 +143,5 @@ op_return - almacena información en el blockchain
 define - busca definiciones de torpedo chauchistico
 precio - muestra el precio de ciertas monedas
 azar - retorna un número al azar
+clima - Obtiene el clima de una ciudad
 ```

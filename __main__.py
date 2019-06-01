@@ -7,6 +7,7 @@ from setexredis import *
 import logging
 
 from precios import precio
+from openweather import clima
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -231,6 +232,7 @@ def main():
     dp.add_handler(CommandHandler("send", send, pass_args=True))
     dp.add_handler(CommandHandler("azar", azar, pass_args=True))
     dp.add_handler(CommandHandler("precio", precio, pass_args=True))
+    dp.add_handler(CommandHandler("clima", clima, pass_args=True))
 
     # log all errors
     dp.add_error_handler(error)

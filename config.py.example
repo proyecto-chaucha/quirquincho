@@ -22,3 +22,6 @@ insight = 'https://explorer.cha.terahash.cl/'
 
 # JSON Define
 definejson = 'https://raw.githubusercontent.com/panterozo/api-chaucha/master/glosario.json'
+
+# Api key del clima https://openweathermap.org/
+WEATHER_API_KEY = '0ba0de30a4813a0123e7e5b97289926c'
