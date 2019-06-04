@@ -153,6 +153,7 @@ def define(bot, update, args):
         botBalance = getbalance(quirquincho[0])[0]
         botBalanceDefine = getbalance(quirquinchoDefine[0])[0]
 
+
         #print(botBalanceDefine)
         usrBalance = getbalance(usrInfo[0])[0]
 
@@ -167,7 +168,8 @@ def define(bot, update, args):
             if definitions['title'].lower() == word:
                 retorno = redisWeekValidation(word,user)
                 msg = retorno + "*%s*: %s" % (originalword.capitalize() , definitions['definition'])                
-                if retorno == "" and redisDayValidation(word,user):
+                
+                if retorno == "" and user.id not in set(getWinners()) and redisDayValidation(word,user) :
                     textoTransaccion = sendTx(quirquinchoDefine, 1, usrInfo[0], '/define')
                     if not textoTransaccion.startswith("explorer"):
                         logger.info("/define sendTx (%i) => %s" % (user.id, textoTransaccion))
@@ -175,6 +177,7 @@ def define(bot, update, args):
                         texto = "!!*Has ganado una chaucha*!!\n\nQuirquincho te la enviará a tu direccion: %s\n\n" % getaddress(user.id)[0]
                         msg = texto+msg+"\n\n"
                         msg += textoTransaccion
+                        arrayWinners(user) # Se incluye en lista de ganadores. Son 14. Al 15avo se comienza a quitar de la lista
                 elif retorno == "":
                     msg = "!!*Busca una nueva definición y obtén tu chaucha diaria*!!.\n\n"+msg # Este tiene un pto para identificar donde cae
 

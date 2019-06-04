@@ -1,4 +1,5 @@
 import redis
+import json
 import datetime
 import time
 from random import randint
@@ -21,6 +22,7 @@ def redisWeekValidation( concept, user ):
 	return msg
 
 def redisDayValidation( concept, user ):
+
 	r = redis.StrictRedis() # obtengo instancia de Redis	
 	if r.exists("valordiario") == 0: # Si el concepto diario no existe, se crea y paga
 		now = datetime.datetime.now() # Ahora
@@ -50,6 +52,25 @@ def redisDayValidation( concept, user ):
 
 	return False
 
+def arrayWinners( user ):
+    r = redis.StrictRedis() # obtengo instancia de Redis	
+    array = []
+    if r.exists("winners") != 0:# si el valor existe
+        array = json.loads(r.get('winners').decode('utf-8')) # Si ya existe, obtengo el array de redis
+    array.append(user.id)
+    if len(array) > 13:
+    	del array[0] # Quito el primer elemento. El array se va moviendo tipo shift
+    json_winners = json.dumps(array)    
+    r.set('winners', json_winners)
+
+
+def getWinners():
+	r = redis.StrictRedis() # obtengo instancia de Redis	
+	array = []
+	if r.exists("winners") != 0:# si el valor existe
+	    return json.loads(r.get('winners').decode('utf-8'))
+	return array
+	
 
 def getRedisPriceCoin( crypto, user ):
 	msg = ""
@@ -63,5 +84,5 @@ def setRedisPriceCoin( crypto, user, valor ):
 	msg = ""
 	r = redis.StrictRedis() # obtengo instancia de Redis	
 	logger.info("setRedisPriceCoin(%i) => %s" % (user.id,crypto))	
-	r.setex(crypto, 60, valor) 
+	r.setex(crypto, 60*2, valor) 
 	return ""
