@@ -1,8 +1,9 @@
 import requests
 import logging
-from setexredis import *
+from contrib.setexredis import *
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -26,7 +27,7 @@ def precio(bot, update, args):
             crypto = 'BTC'
 
         if crypto in ('CHA', 'TRX', 'XLM', 'DASH', 'DAI', 'LUK', 'BNB'):
-            msg = _orionx('%sCLP' % crypto,update)
+            msg = _orionx('%sCLP' % crypto, update)
         elif crypto in CURRENCIES:
             msg = _clp(crypto)
         else:
@@ -40,9 +41,9 @@ def precio(bot, update, args):
     update.message.reply_text("%s" % msg)
 
 
-def _orionx(crypto,update):
+def _orionx(crypto, update):
     user = update.message.from_user
-    priceMem = getRedisPriceCoin(crypto,user)
+    priceMem = getRedisPriceCoin(crypto, user)
     if priceMem != "":
         return "1 {} = {:3,.0f} 🇨🇱".format(crypto.replace('CLP', ''), int(priceMem))
     else:
@@ -51,7 +52,7 @@ def _orionx(crypto,update):
             return 'Error al obtener el precio desde Orionx'
 
         price = int(response.json().get(crypto).get('lastPrice'))
-        setRedisPriceCoin(crypto,user,price)
+        setRedisPriceCoin(crypto, user, price)
         return "1 {} = {:3,.0f} 🇨🇱".format(crypto.replace('CLP', ''), price)
 
 

@@ -7,14 +7,14 @@ salt = "Aquí debes incluir una clave secreta. Se sugiere el resultado de la eje
 #**** No modificar los siguientes campos *****#
 #* Network *#
 
-## Letra c, al inicio de todas las direcciones Chaucha
+# Letra c, al inicio de todas las direcciones Chaucha
 magic = 88
 
-## Pago a minero
+# Pago a minero
 base_fee = 0.000452
 fee_per_input = 0.000296
 
-## Cantidad de ceros decimales o llamados satoshis
+# Cantidad de ceros decimales o llamados satoshis
 COIN = 100000000
 
 # API URL
