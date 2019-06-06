@@ -91,9 +91,9 @@ def balance(bot, update):
         user = update.message.from_user
 
         addr = getaddress(user.id)[0]
-        balance = getbalance(addr)
+        confirmed, inputs, unconfirmed = getbalance(addr)
 
-        total = balance[0] + balance[2]
+        total = confirmed + unconfirmed
 
         # MSG
         msg = "Tienes %.8f CHA en tu dirección\n"
