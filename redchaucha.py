@@ -59,10 +59,10 @@ def sendTx(info, amount, receptor, op_return=''):
     if not len(receptor) == 34 and receptor[0] == 'c':
         return "Dirección inválida"
 
-    elif not confirmed_balance >= amount:
+    elif amount > confirmed_balance:
         return "Balance insuficiente"
 
-    elif not amount > 0:
+    elif amount <= 0:
         return "Monto inválido"
 
     # Transformar valores a Chatoshis
