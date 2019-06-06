@@ -4,129 +4,143 @@ from bitcoin import *
 import binascii
 import time
 
+
 def getTx(addr, max_read):
-	info = get(insight + '/api/txs/?address=' + addr).json()
-	msg = ''
-	counter = 0
+    info = get(insight + '/api/txs/?address=' + addr).json()
+    msg = ''
+    counter = 0
 
-	for x in range(int(info['pagesTotal'])):
-		info = get(insight + '/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
-		for i in info['txs']:
-			for j in i['vout']:
-				hex_script = j['scriptPubKey']['hex']
-				if hex_script.startswith('6a'):
-					if len(hex_script) <= 77*2:
-						sub_script = hex_script[4:]
-					else:
-						sub_script = hex_script[6:]
+    for x in range(int(info['pagesTotal'])):
+        info = get(insight + '/api/txs/?address=' +
+                   addr + '&pageNum=' + str(x)).json()
+        for i in info['txs']:
+            for j in i['vout']:
+                hex_script = j['scriptPubKey']['hex']
+                if hex_script.startswith('6a'):
+                    if len(hex_script) <= 77*2:
+                        sub_script = hex_script[4:]
+                    else:
+                        sub_script = hex_script[6:]
 
-					msg_str = binascii.a2b_hex(sub_script).decode('utf-8', errors='ignore')
-					fecha = time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
+                    msg_str = binascii.a2b_hex(sub_script).decode(
+                        'utf-8', errors='ignore')
+                    fecha = time.strftime(
+                        '%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
 
-					if msg_str.find('Quirquincho') < 0 and msg_str.find('/dice') < 0:
-						if counter < max_read:
-							msg += '[' + fecha +'](http://insight.chaucha.cl/tx/' + i['txid'] + '): `' +  msg_str + '`\n'
-							counter +=1
+                    if msg_str.find('Quirquincho') < 0 and msg_str.find('/dice') < 0:
+                        if counter < max_read:
+                            msg += '[' + fecha + '](http://insight.chaucha.cl/tx/' + \
+                                i['txid'] + '): `' + msg_str + '`\n'
+                            counter += 1
 
-	return msg
+    return msg
 
 
 def OP_RETURN_payload(string):
-	metadata = bytes(string, 'utf-8')
-	metadata_len = len(metadata)
+    metadata = bytes(string, 'utf-8')
+    metadata_len = len(metadata)
 
-	if metadata_len <= 75:
-		payload = bytearray((metadata_len,)) + metadata
-	elif metadata_len <= 256:
-		payload = b"\x4c" + bytearray((metadata_len,)) + metadata
-	else:
-		payload = b"\x4d" + bytearray((metadata_len%256,)) + bytearray((int(metadata_len/256),)) + metadata
+    if metadata_len <= 75:
+        payload = bytearray((metadata_len,)) + metadata
+    elif metadata_len <= 256:
+        payload = b"\x4c" + bytearray((metadata_len,)) + metadata
+    else:
+        payload = b"\x4d" + \
+            bytearray((metadata_len % 256,)) + \
+            bytearray((int(metadata_len/256),)) + metadata
 
-	return payload
+    return payload
 
-def sendTx(info, amount, receptor, op_return = ''):
-		addr, privkey = info
-		confirmed_balance, inputs, unconfirmed = getbalance(addr)
 
-		if not len(receptor) == 34 and receptor[0] == 'c':
-			msg = "Dirección inválida"
+def sendTx(info, amount, receptor, op_return=''):
+    addr, privkey = info
+    confirmed_balance, inputs, unconfirmed = getbalance(addr)
 
-		elif not confirmed_balance >= amount:
-			msg = "Balance insuficiente"
+    if not len(receptor) == 34 and receptor[0] == 'c':
+        msg = "Dirección inválida"
 
-		elif not amount > 0:
-			msg = "Monto inválido"
+    elif not confirmed_balance >= amount:
+        msg = "Balance insuficiente"
 
-		else:
-			# Transformar valores a Chatoshis
-			used_amount = int(amount*COIN)
+    elif not amount > 0:
+        msg = "Monto inválido"
 
-			# Utilizar solo las unspent que se necesiten
-			used_balance = 0
-			used_inputs = []
+    else:
+        # Transformar valores a Chatoshis
+        used_amount = int(amount*COIN)
 
-			for i in inputs:
-				used_balance += i['value']
-				used_inputs.append(i)
-				if used_balance > used_amount:
-					break
+        # Utilizar solo las unspent que se necesiten
+        used_balance = 0
+        used_inputs = []
 
-			used_fee = int((base_fee + fee_per_input*len(inputs))*COIN)
+        for i in inputs:
+            used_balance += i['value']
+            used_inputs.append(i)
+            if used_balance > used_amount:
+                break
 
-			# Output
-			outputs = []
+        used_fee = int((base_fee + fee_per_input*len(inputs))*COIN)
 
-			# Receptor
-			if used_balance == used_amount:
-				outputs.append({'address' : receptor, 'value' : (used_amount - used_fee)})
-			else:
-				outputs.append({'address' : receptor, 'value' : used_amount})
+        # Output
+        outputs = []
 
-			# Change
-			if used_balance > used_amount + used_fee:
-				outputs.append({'address' : addr, 'value' : int(used_balance - used_amount - used_fee)})
+        # Receptor
+        if used_balance == used_amount:
+            outputs.append(
+                {'address': receptor, 'value': (used_amount - used_fee)})
+        else:
+            outputs.append({'address': receptor, 'value': used_amount})
 
-			# OP_RETURN
-			if len(op_return) > 0 and len(op_return) <= 255:
-				payload = OP_RETURN_payload(op_return)
-				script = '6a' + binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
-				outputs.append({'value' : 0, 'script' : script})
+        # Change
+        if used_balance > used_amount + used_fee:
+            outputs.append({'address': addr, 'value': int(
+                used_balance - used_amount - used_fee)})
 
-			# Transacción
-			tx = mktx(used_inputs, outputs)
+        # OP_RETURN
+        if len(op_return) > 0 and len(op_return) <= 255:
+            payload = OP_RETURN_payload(op_return)
+            script = '6a' + \
+                binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
+            outputs.append({'value': 0, 'script': script})
 
-			# Firma
-			for i in range(len(used_inputs)):
-				tx = sign(tx, i, privkey)
+        # Transacción
+        tx = mktx(used_inputs, outputs)
 
-			broadcasting = post(insight + '/api/tx/send', data={'rawtx' : tx})
+        # Firma
+        for i in range(len(used_inputs)):
+            tx = sign(tx, i, privkey)
 
-			try:
-				msg = "explorer.cha.terahash.cl/tx/%s" % broadcasting.json()['txid']
-			except:
-				msg = broadcasting.text
+        broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
 
-		return msg
+        try:
+            msg = "explorer.cha.terahash.cl/tx/%s" % broadcasting.json()[
+                'txid']
+        except:
+            msg = broadcasting.text
+
+    return msg
 
 
 def getaddress(user_id):
-	privkey = sha256(str(user_id) + str(salt))
-	addr = privtoaddr(privkey, magic)
-	return [addr, privkey]
+    privkey = sha256(str(user_id) + str(salt))
+    addr = privtoaddr(privkey, magic)
+    return [addr, privkey]
+
 
 def getbalance(addr):
-	# Captura de balance por tx sin gastar
-	unspent = get(insight + '/api/addr/' + addr + '/utxo').json()
+    # Captura de balance por tx sin gastar
+    unspent = get(insight + '/api/addr/' + addr + '/utxo').json()
 
-	confirmed = unconfirmed = 0
+    confirmed = unconfirmed = 0
 
-	inputs = []
-	for i in unspent:
-		if i['confirmations'] >= 1 and i['amount'] > 0.001:
-			confirmed += i['amount']
-			inputs_tx = {'output' : i['txid'] + ':' + str(i['vout']), 'value' : i['satoshis'], 'address' : i['address']}
-			inputs.append(inputs_tx)
-		else:
-			unconfirmed += i['amount']
+    inputs = []
+    for i in unspent:
+        if i['confirmations'] >= 1 and i['amount'] > 0.001:
+            confirmed += i['amount']
+            inputs_tx = {
+                'output': i['txid'] + ':' + str(i['vout']), 'value': i['satoshis'], 'address': i['address']}
+            inputs.append(inputs_tx)
+        else:
+            unconfirmed += i['amount']
 
-	return [confirmed, inputs, unconfirmed]
+    return [confirmed, inputs, unconfirmed]
