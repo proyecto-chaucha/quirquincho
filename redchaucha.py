@@ -57,60 +57,59 @@ def sendTx(info, amount, receptor, op_return=''):
     confirmed_balance, inputs, unconfirmed = getbalance(addr)
 
     if not len(receptor) == 34 and receptor[0] == 'c':
-        msg = "Dirección inválida"
+        return "Dirección inválida"
 
     elif not confirmed_balance >= amount:
-        msg = "Balance insuficiente"
+        return "Balance insuficiente"
 
     elif not amount > 0:
-        msg = "Monto inválido"
+        return "Monto inválido"
 
-    else:
-        # Transformar valores a Chatoshis
-        used_amount = int(amount*COIN)
+    # Transformar valores a Chatoshis
+    used_amount = int(amount*COIN)
 
-        # Utilizar solo las unspent que se necesiten
-        used_balance = 0
-        used_inputs = []
+    # Utilizar solo las unspent que se necesiten
+    used_balance = 0
+    used_inputs = []
 
-        for i in inputs:
-            used_balance += i['value']
-            used_inputs.append(i)
-            if used_balance > used_amount:
-                break
+    for i in inputs:
+        used_balance += i['value']
+        used_inputs.append(i)
+        if used_balance > used_amount:
+            break
 
-        # Output
-        outputs = [{'address': receptor, 'value': used_amount}]
+    # Output
+    outputs = [{'address': receptor, 'value': used_amount}]
 
-        # OP_RETURN
-        if len(op_return) > 0 and len(op_return) <= 255:
-            payload = OP_RETURN_payload(op_return)
-            script = '6a' + \
-                b2a_hex(payload).decode('utf-8', errors='ignore')
+    # OP_RETURN
+    if len(op_return) > 0 and len(op_return) <= 255:
+        payload = OP_RETURN_payload(op_return)
+        script = '6a' + \
+            b2a_hex(payload).decode('utf-8', errors='ignore')
 
-            outputs.append({'value': 0, 'script': script})
+        outputs.append({'value': 0, 'script': script})
 
-        # Transacción
-        template_tx = mktx(used_inputs, outputs)
-        size = len(a2b_hex(template_tx))
+    # Transacción
+    template_tx = mktx(used_inputs, outputs)
+    size = len(a2b_hex(template_tx))
 
-        # FEE = 0.01 CHA/kb
-        # MAX FEE = 0.1 CHA
+    # FEE = 0.01 CHA/kb
+    # MAX FEE = 0.1 CHA
 
-        fee = int((size/1024)*0.01*COIN) 
-        fee = 1e7 if fee > 1e7 else fee
+    fee = int((size/1024)*0.01*COIN) 
+    fee = 1e7 if fee > 1e7 else fee
 
-        tx = mksend(used_inputs, outputs, addr, fee)
+    tx = mksend(used_inputs, outputs, addr, fee)
 
-        for i in range(len(used_inputs)):
-            tx = sign(tx_send, i, privkey)
-        
-        broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
+    for i in range(len(used_inputs)):
+        tx = sign(tx_send, i, privkey)
+    
+    broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
 
-        try:
-            msg = insight + "/tx/%s" % broadcasting.json()['txid']
-        except:
-            msg = broadcasting.text
+    try:
+        msg = insight + "/tx/%s" % broadcasting.json()['txid']
+    except:
+        msg = broadcasting.text
 
     return msg
 
