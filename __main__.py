@@ -100,7 +100,7 @@ def balance(bot, update):
         msg += "%.8f CHA para utilizar y %.8f CHA sin confirmar.\n\n"
         msg += "Tu address es %s"
 
-        msg = msg % (total, balance[0], balance[2], addr)
+        msg = msg % (total, confirmed, unconfirmed, addr)
     except:
         msg = "No se pudo ejecutar la lectura de balance :C"
 
