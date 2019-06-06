@@ -99,10 +99,14 @@ def sendTx(info, amount, receptor, op_return=''):
     fee = int((size/1024)*0.01*COIN) 
     fee = 1e7 if fee > 1e7 else fee
 
-    tx = mksend(used_inputs, outputs, addr, fee)
+    if not used_balance == amount:
+        outputs[0] = {'address': receptor, 'value': used_amount - fee}
+        tx = mktx(used_inputs, outputs)
+    else:
+        tx = mksend(used_inputs, outputs, addr, fee)
 
     for i in range(len(used_inputs)):
-        tx = sign(tx_send, i, privkey)
+        tx = sign(tx, i, privkey)
     
     broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
 
