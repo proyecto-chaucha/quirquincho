@@ -125,17 +125,19 @@ def getaddress(user_id):
 
 
 def getbalance(addr):
-    # Captura de balance por tx sin gastar
     unspent = get(insight + '/api/addr/' + addr + '/utxo').json()
 
     confirmed = unconfirmed = 0
 
     inputs = []
     for i in unspent:
-        if i['confirmations'] >= 1 and i['amount'] > 0.001:
+        if i['confirmations'] >= 1 and i['amount'] >= 0.001:
             confirmed += i['amount']
             inputs_tx = {
-                'output': i['txid'] + ':' + str(i['vout']), 'value': i['satoshis'], 'address': i['address']}
+                'output': i['txid'] + ':' + str(i['vout']),
+                'value': i['satoshis'],
+                'address': i['address']}
+
             inputs.append(inputs_tx)
         else:
             unconfirmed += i['amount']
