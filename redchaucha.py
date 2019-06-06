@@ -79,42 +79,36 @@ def sendTx(info, amount, receptor, op_return=''):
             if used_balance > used_amount:
                 break
 
-        used_fee = int((base_fee + fee_per_input*len(inputs))*COIN)
-
         # Output
-        outputs = []
-
-        # Receptor
-        if used_balance == used_amount:
-            outputs.append(
-                {'address': receptor, 'value': (used_amount - used_fee)})
-        else:
-            outputs.append({'address': receptor, 'value': used_amount})
-
-        # Change
-        if used_balance > used_amount + used_fee:
-            outputs.append({'address': addr, 'value': int(
-                used_balance - used_amount - used_fee)})
+        outputs = [{'address': receptor, 'value': used_amount}]
 
         # OP_RETURN
         if len(op_return) > 0 and len(op_return) <= 255:
             payload = OP_RETURN_payload(op_return)
             script = '6a' + \
                 b2a_hex(payload).decode('utf-8', errors='ignore')
+
             outputs.append({'value': 0, 'script': script})
 
         # Transacción
-        tx = mktx(used_inputs, outputs)
+        template_tx = mktx(used_inputs, outputs)
+        size = len(a2b_hex(template_tx))
 
-        # Firma
+        # FEE = 0.01 CHA/kb
+        # MAX FEE = 0.1 CHA
+
+        fee = int((size/1024)*0.01*COIN) 
+        fee = 1e7 if fee > 1e7 else fee
+
+        tx = mksend(used_inputs, outputs, addr, fee)
+
         for i in range(len(used_inputs)):
-            tx = sign(tx, i, privkey)
-
+            tx = sign(tx_send, i, privkey)
+        
         broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
 
         try:
-            msg = "explorer.cha.terahash.cl/tx/%s" % broadcasting.json()[
-                'txid']
+            msg = insight + "/tx/%s" % broadcasting.json()['txid']
         except:
             msg = broadcasting.text
 
