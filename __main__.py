@@ -1,12 +1,14 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram import ParseMode
-from config import token, salt, definejson
 from random import randint
-from redchaucha import *
-from setexredis import *
 import logging
 
-from precios import precio
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ParseMode
+
+from config import token, salt, definejson
+from redchaucha import *
+
+from contrib.setexredis import *
+from contrib.precios import precio
 
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)

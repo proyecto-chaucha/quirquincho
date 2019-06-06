@@ -1,7 +1,7 @@
 from config import salt, COIN, base_fee, fee_per_input, magic, insight
 from requests import get, post
 from bitcoin import *
-import binascii
+from binascii import a2b_hex, b2a_hex
 import time
 
 
@@ -22,7 +22,7 @@ def getTx(addr, max_read):
                     else:
                         sub_script = hex_script[6:]
 
-                    msg_str = binascii.a2b_hex(sub_script).decode(
+                    msg_str = a2b_hex(sub_script).decode(
                         'utf-8', errors='ignore')
                     fecha = time.strftime(
                         '%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
@@ -100,7 +100,7 @@ def sendTx(info, amount, receptor, op_return=''):
         if len(op_return) > 0 and len(op_return) <= 255:
             payload = OP_RETURN_payload(op_return)
             script = '6a' + \
-                binascii.b2a_hex(payload).decode('utf-8', errors='ignore')
+                b2a_hex(payload).decode('utf-8', errors='ignore')
             outputs.append({'value': 0, 'script': script})
 
         # Transacción
