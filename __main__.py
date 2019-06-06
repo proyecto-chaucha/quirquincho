@@ -96,8 +96,8 @@ def balance(bot, update):
         total = balance[0] + balance[2]
 
         # MSG
-        msg = "Tienes %f CHA en tu dirección\n"
-        msg += "%f CHA para utilizar y %f CHA sin confirmar.\n\n"
+        msg = "Tienes %.8f CHA en tu dirección\n"
+        msg += "%.8f CHA para utilizar y %.8f CHA sin confirmar.\n\n"
         msg += "Tu address es %s"
 
         msg = msg % (total, balance[0], balance[2], addr)
@@ -117,13 +117,13 @@ def dice(bot, update, args):
         usrBalance = getbalance(usrInfo[0])[0]
 
         if args[0] == 'house':
-            msg = 'Aún puedes ganar %f chauchas!' % float(botBalance)
+            msg = 'Aún puedes ganar %.8f chauchas!' % float(botBalance)
         else:
             bet = float(args[0])
             betFee = round(bet*0.025, 8)  # Fee del 2.5%
             if usrBalance >= bet and botBalance > 0 and bet > 0.001:
                 num = randint(0, 50)
-                msg = '%f CHA (fee: %f)\n' % (bet, betFee)
+                msg = '%.8f CHA (fee: %.8f)\n' % (bet, betFee)
                 if num >= 25:
                     msg = 'Perdiste ' + msg
                     msg += sendTx(usrInfo, bet, quirquincho[0], '/dice')
