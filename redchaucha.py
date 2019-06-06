@@ -99,7 +99,7 @@ def sendTx(info, amount, receptor, op_return=''):
     fee = int((size/1024)*0.01*COIN) 
     fee = 1e7 if fee > 1e7 else fee
 
-    if not used_balance == amount:
+    if used_balance == amount:
         outputs[0] = {'address': receptor, 'value': used_amount - fee}
         tx = mktx(used_inputs, outputs)
     else:
