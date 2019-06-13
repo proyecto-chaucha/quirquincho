@@ -1,4 +1,4 @@
-from config import salt, COIN, base_fee, fee_per_input, magic, insight
+from config import RANDOM_SALT, COIN, ADDRESS_PREFIX, INSIGHT
 from requests import get, post
 from bitcoin import *
 from binascii import a2b_hex, b2a_hex
@@ -6,13 +6,12 @@ import time
 
 
 def getTx(addr, max_read):
-    info = get(insight + '/api/txs/?address=' + addr).json()
+    info = get(INSIGHT + '/api/txs/?address=' + addr).json()
     msg = ''
     counter = 0
 
     for x in range(int(info['pagesTotal'])):
-        info = get(insight + '/api/txs/?address=' +
-                   addr + '&pageNum=' + str(x)).json()
+        info = get(INSIGHT + '/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
         for i in info['txs']:
             for j in i['vout']:
                 hex_script = j['scriptPubKey']['hex']
@@ -108,10 +107,10 @@ def sendTx(info, amount, receptor, op_return=''):
     for i in range(len(used_inputs)):
         tx = sign(tx, i, privkey)
     
-    broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
+    broadcasting = post(INSIGHT + '/api/tx/send', data={'rawtx': tx})
 
     try:
-        msg = insight + "/tx/%s" % broadcasting.json()['txid']
+        msg = INSIGHT + "/tx/%s" % broadcasting.json()['txid']
     except:
         msg = broadcasting.text
 
@@ -119,13 +118,13 @@ def sendTx(info, amount, receptor, op_return=''):
 
 
 def getaddress(user_id):
-    privkey = sha256(str(user_id) + str(salt))
-    addr = privtoaddr(privkey, magic)
+    privkey = sha256(str(user_id) + str(RANDOM_SALT))
+    addr = privtoaddr(privkey, ADDRESS_PREFIX)
     return [addr, privkey]
 
 
 def getbalance(addr):
-    unspent = get(insight + '/api/addr/' + addr + '/utxo').json()
+    unspent = get(INSIGHT + '/api/addr/' + addr + '/utxo').json()
 
     confirmed = unconfirmed = 0
 
