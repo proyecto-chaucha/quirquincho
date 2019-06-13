@@ -1,4 +1,4 @@
-from config import salt, COIN, base_fee, fee_per_input, magic, insight
+from config import RANDOM_SALT, COIN, ADDRESS_PREFIX, INSIGHT
 from requests import get, post
 from bitcoin import *
 from binascii import a2b_hex, b2a_hex
@@ -6,34 +6,36 @@ import time
 
 
 def getTx(addr, max_read):
-    info = get(insight + '/api/txs/?address=' + addr).json()
-    msg = ''
-    counter = 0
+    info = get(INSIGHT + '/api/txs/?address=' + addr).json()
+    msg_array = []
+    bad_msg = ['Quirquincho', '/dice', 'dice tax', '/define', 'Quirquincho sendall']
 
     for x in range(int(info['pagesTotal'])):
-        info = get(insight + '/api/txs/?address=' +
-                   addr + '&pageNum=' + str(x)).json()
+        info = get(INSIGHT + '/api/txs/?address=' + addr + '&pageNum=' + str(x)).json()
         for i in info['txs']:
             for j in i['vout']:
                 hex_script = j['scriptPubKey']['hex']
-                if hex_script.startswith('6a'):
-                    if len(hex_script) <= 77*2:
-                        sub_script = hex_script[4:]
-                    else:
-                        sub_script = hex_script[6:]
 
-                    msg_str = a2b_hex(sub_script).decode(
-                        'utf-8', errors='ignore')
-                    fecha = time.strftime(
-                        '%d.%m.%Y %H:%M:%S', time.localtime(int(i['time'])))
+                if len(msg_array) == max_read:
+                    return '\n'.join(msg_array)
 
-                    if msg_str.find('Quirquincho') < 0 and msg_str.find('/dice') < 0:
-                        if counter < max_read:
-                            msg += '[' + fecha + '](http://insight.chaucha.cl/tx/' + \
-                                i['txid'] + '): `' + msg_str + '`\n'
-                            counter += 1
+                if not hex_script.startswith('6a'):
+                    continue
 
-    return msg
+                if len(hex_script) <= 77*2:
+                    sub_script = hex_script[4:]
+                else:
+                    sub_script = hex_script[6:]
+            
+                msg_str = a2b_hex(sub_script).decode('utf-8', errors='ignore')
+                fecha = time.strftime('%d/%m/%Y %H:%M', time.localtime(int(i['time'])))
+                
+                if msg_str in bad_msg:
+                    continue
+
+                msg_array.append(fecha + ': `' + msg_str + '`')
+
+    return 'No hay mensajes suficientes'
 
 
 def OP_RETURN_payload(string):
@@ -108,10 +110,10 @@ def sendTx(info, amount, receptor, op_return=''):
     for i in range(len(used_inputs)):
         tx = sign(tx, i, privkey)
     
-    broadcasting = post(insight + '/api/tx/send', data={'rawtx': tx})
+    broadcasting = post(INSIGHT + '/api/tx/send', data={'rawtx': tx})
 
     try:
-        msg = insight + "/tx/%s" % broadcasting.json()['txid']
+        msg = INSIGHT + "/tx/%s" % broadcasting.json()['txid']
     except:
         msg = broadcasting.text
 
@@ -119,13 +121,13 @@ def sendTx(info, amount, receptor, op_return=''):
 
 
 def getaddress(user_id):
-    privkey = sha256(str(user_id) + str(salt))
-    addr = privtoaddr(privkey, magic)
+    privkey = sha256(str(user_id) + str(RANDOM_SALT))
+    addr = privtoaddr(privkey, ADDRESS_PREFIX)
     return [addr, privkey]
 
 
 def getbalance(addr):
-    unspent = get(insight + '/api/addr/' + addr + '/utxo').json()
+    unspent = get(INSIGHT + '/api/addr/' + addr + '/utxo').json()
 
     confirmed = unconfirmed = 0
 

@@ -4,7 +4,7 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
 
-from config import token, salt, definejson
+from config import TELEGRAM_TOKEN, RANDOM_SALT, DEFINE
 from redchaucha import *
 
 from contrib.setexredis import *
@@ -153,7 +153,7 @@ def define(bot, update, args):
         word = word.lower()
 
         if args[0] == 'url':
-            msg = definejson
+            msg = DEFINE
 
         user = update.message.from_user
         usrInfo = getaddress(user.id)
@@ -163,7 +163,7 @@ def define(bot, update, args):
         # print(botBalanceDefine)
         usrBalance = getbalance(usrInfo[0])[0]
 
-        info = get(definejson)
+        info = get(DEFINE)
         # Se setea el encoding a ISO-8859-1
         info.encoding = info.apparent_encoding
         info = info.json()
@@ -197,7 +197,7 @@ def define(bot, update, args):
                 break
         if val == 0:
             msg = "No  existe la definicion  :'( \n\n"
-            msg += "Revisar el link %s para más definiciones" % definejson
+            msg += "Revisar el link %s para más definiciones" % DEFINE
             #msg += "Si quieres proponer esta definicion utiliza el comando adddefinition"
     except Exception as e:
         print(e)
@@ -233,7 +233,7 @@ def main():
     global quirquinchoDefine
 
     # Configuración
-    updater = Updater(token)
+    updater = Updater(TELEGRAM_TOKEN)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -253,9 +253,9 @@ def main():
     # log all errors
     dp.add_error_handler(error)
 
-    quirquincho = getaddress('Quirquincho' + str(salt))
+    quirquincho = getaddress('Quirquincho' + str(RANDOM_SALT))
     # Se hace una wallet nueva para el traspaso de coins
-    quirquinchoDefine = getaddress(str(salt))
+    quirquinchoDefine = getaddress(str(RANDOM_SALT))
     # Inicio de bot
     logger.info("Quirquincho V 2.0 - %s" % quirquincho[0])
     logger.info("QuirquinchoDefine V 2.0 - %s" % quirquinchoDefine[0])

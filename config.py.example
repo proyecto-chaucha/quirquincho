@@ -1,24 +1,24 @@
 # Telegram bot Token
-token = "Aquí debes ingresar el Token entregado por el @BotFather de Telegram"
+TELEGRAM_TOKEN = "Aquí debes ingresar el Token entregado por el @BotFather de Telegram"
 
 # python -c "import os; print(repr(os.urandom(32)));"
-salt = "Aquí debes incluir una clave secreta. Se sugiere el resultado de la ejecución de la línea 4"
+RANDOM_SALT = "Aquí debes incluir una clave secreta. Se sugiere el resultado de la ejecución de la línea 4"
 
 #**** No modificar los siguientes campos *****#
 #* Network *#
 
 # Letra c, al inicio de todas las direcciones Chaucha
-magic = 88
+ADDRESS_PREFIX = 88
 
 # Pago a minero
-base_fee = 0.000452
-fee_per_input = 0.000296
+BASE_FEE = 0.01
+MAX_FEE = 0.1
 
 # Cantidad de ceros decimales o llamados satoshis
-COIN = 100000000
+COIN = 1e8
 
 # API URL
-insight = 'https://explorer.cha.terahash.cl/'
+INSIGHT = 'https://explorer.cha.terahash.cl/'
 
 # JSON Define
-definejson = 'https://raw.githubusercontent.com/panterozo/api-chaucha/master/glosario.json'
+DEFINE = 'https://raw.githubusercontent.com/panterozo/api-chaucha/master/glosario.json'
