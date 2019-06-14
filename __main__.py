@@ -1,6 +1,7 @@
 from random import randint
 import logging
 
+from telegram.ext.dispatcher import run_async
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
 
@@ -15,6 +16,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@run_async
 def mensajes(bot, update, args):
     try:
         user = update.message.from_user
@@ -35,6 +37,7 @@ def mensajes(bot, update, args):
     update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
 
+@run_async
 def op_return(bot, update, args):
     try:
         user = update.message.from_user
@@ -52,12 +55,14 @@ def op_return(bot, update, args):
     update.message.reply_text("%s" % msg)
 
 
+@run_async
 def start(bot, update):
     msg = "*Holi !*"
     logger.info("start() => %s" % (msg))
     update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
 
+@run_async
 def qr(bot, update):
     user = update.message.from_user
     info = getaddress(user.id)
@@ -67,6 +72,7 @@ def qr(bot, update):
         photo='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data=' + info[0])
 
 
+@run_async
 def send(bot, update, args):
     try:
         user = update.message.from_user
@@ -85,6 +91,7 @@ def send(bot, update, args):
     update.message.reply_text("%s" % msg)
 
 
+@run_async
 def balance(bot, update):
     try:
         # Descubrimiento de address
@@ -108,6 +115,7 @@ def balance(bot, update):
     update.message.reply_text("%s" % msg)
 
 
+@run_async
 def dice(bot, update, args):
     try:
 
@@ -143,6 +151,7 @@ def dice(bot, update, args):
     update.message.reply_text("%s" % msg)
 
 
+@run_async
 def define(bot, update, args):
     try:
 
@@ -208,6 +217,7 @@ def define(bot, update, args):
     update.message.reply_text("%s" % msg, parse_mode=ParseMode.MARKDOWN)
 
 
+@run_async
 def azar(bot, update, args):
     try:
         max_number = int(args[0])
@@ -249,7 +259,6 @@ def main():
     dp.add_handler(CommandHandler("send", send, pass_args=True))
     dp.add_handler(CommandHandler("azar", azar, pass_args=True))
     dp.add_handler(CommandHandler("precio", precio, pass_args=True))
-
     # log all errors
     dp.add_error_handler(error)
 
