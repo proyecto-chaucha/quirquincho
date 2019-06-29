@@ -188,7 +188,7 @@ def define(bot, update, args):
                 if retorno == "" and user.id not in set(getWinners()) and redisDayValidation(word, user):
                     textoTransaccion = sendTx(
                         quirquinchoDefine, 1, usrInfo[0], '/define')
-                    if not textoTransaccion.startswith("explorer"):
+                    if not textoTransaccion.startswith("https://explorer"):
                         logger.info("/define sendTx (%i) => %s" %
                                     (user.id, textoTransaccion))
                     else:
