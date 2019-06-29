@@ -86,7 +86,6 @@ def getWinners():
 
 
 def getRedisPriceCoin(crypto, user):
-    msg = ""
     r = redis.StrictRedis()  # obtengo instancia de Redis
     logger.info("getRedisPriceCoin(%i) => %s" % (user.id, crypto))
     if r.exists(crypto) != 0:
@@ -95,7 +94,6 @@ def getRedisPriceCoin(crypto, user):
 
 
 def setRedisPriceCoin(crypto, user, valor):
-    msg = ""
     r = redis.StrictRedis()  # obtengo instancia de Redis
     logger.info("setRedisPriceCoin(%i) => %s" % (user.id, crypto))
     r.setex(crypto, 60*2, valor)
