@@ -18,7 +18,7 @@ MAX_FEE = 0.1
 COIN = 1e8
 
 # API URL
-INSIGHT = 'https://explorer.cha.terahash.cl/'
+INSIGHT = 'https://explorer.cha.terahash.cl'
 
 # JSON Define
 DEFINE = 'https://raw.githubusercontent.com/panterozo/api-chaucha/master/glosario.json'
