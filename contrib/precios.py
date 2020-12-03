@@ -26,7 +26,7 @@ def precio(bot, update, args):
         else:
             crypto = 'BTC'
 
-        if crypto in ('CHA', 'TRX', 'XLM', 'DASH', 'DAI', 'LUK', 'BNB'):
+        if crypto in ('CHA', 'TRX', 'XLM', 'DASH', 'DAI', 'LUK', 'BNB', 'BTC'):
             msg = _orionx('%sCLP' % crypto, update)
         elif crypto in CURRENCIES:
             msg = _clp(crypto)
